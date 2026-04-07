@@ -43,7 +43,6 @@ def _paginate(key, path, params=None):
 
 
 def test_connection(api_key):
-    """Returns (success: bool, display_name: str, error: str)"""
     try:
         r = requests.get(f"{BASE}/me/", auth=_auth(api_key), timeout=5)
         if r.status_code == 200:
@@ -55,6 +54,8 @@ def test_connection(api_key):
         return False, None, str(e)
 
 
+# ── Existing (used by personal app) ───────────────────────────────────────────
+
 @st.cache_data(ttl=1800, show_spinner=False)
 def get_users(api_key):
     data, err = _paginate(api_key, "user")
@@ -65,12 +66,7 @@ def get_users(api_key):
 def get_won_this_month(api_key):
     month_start = date.today().replace(day=1).isoformat()
     data, err = _paginate(api_key, "opportunity", {"status_type": "won"})
-    # Filter client-side in case the API ignores the date param
-    filtered = []
-    for o in data:
-        dw = o.get("date_won") or ""
-        if dw >= month_start:
-            filtered.append(o)
+    filtered = [o for o in data if (o.get("date_won") or "") >= month_start]
     return filtered, err
 
 
@@ -93,9 +89,67 @@ def get_leads(api_key):
     return data, err
 
 
+# ── Date-range versions (for monthly toggle) ───────────────────────────────────
+
+@st.cache_data(ttl=1800, show_spinner=False)
+def get_won_in_range(api_key, month_start, month_end):
+    """Won opportunities within a date range (month_start/end as ISO date strings)."""
+    data, err = _paginate(api_key, "opportunity", {"status_type": "won"})
+    filtered = [o for o in data
+                if month_start <= (o.get("date_won") or "") < month_end]
+    return filtered, err
+
+
+@st.cache_data(ttl=1800, show_spinner=False)
+def get_calls_in_range(api_key, month_start, month_end):
+    """Calls within a date range."""
+    data, err = _paginate(api_key, "activity/call", {
+        "date_created__gte": month_start + "T00:00:00.000000",
+        "date_created__lt":  month_end   + "T00:00:00.000000",
+    })
+    return data, err
+
+
+# ── Custom activities (RPS) ────────────────────────────────────────────────────
+
+@st.cache_data(ttl=3600, show_spinner=False)
+def get_custom_activity_types(api_key):
+    """Get all custom activity type definitions for this account."""
+    data, err = _paginate(api_key, "custom_activity_type")
+    return data, err
+
+
+@st.cache_data(ttl=1800, show_spinner=False)
+def get_custom_activities_in_range(api_key, type_id, month_start, month_end):
+    """Custom activities of a specific type within a date range."""
+    data, err = _paginate(api_key, "activity/custom", {
+        "custom_activity_type_id": type_id,
+        "date_created__gte": month_start + "T00:00:00.000000",
+        "date_created__lt":  month_end   + "T00:00:00.000000",
+    })
+    return data, err
+
+
+# ── Lead status changes (Vibe) ─────────────────────────────────────────────────
+
+@st.cache_data(ttl=1800, show_spinner=False)
+def get_status_changes_in_range(api_key, month_start, month_end):
+    """Lead status change activities within a date range."""
+    data, err = _paginate(api_key, "activity/lead_status_change", {
+        "date_created__gte": month_start + "T00:00:00.000000",
+        "date_created__lt":  month_end   + "T00:00:00.000000",
+    })
+    return data, err
+
+
 def clear_cache():
     get_users.clear()
     get_won_this_month.clear()
     get_active_pipeline.clear()
     get_calls_this_month.clear()
     get_leads.clear()
+    get_won_in_range.clear()
+    get_calls_in_range.clear()
+    get_custom_activity_types.clear()
+    get_custom_activities_in_range.clear()
+    get_status_changes_in_range.clear()

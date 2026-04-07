@@ -13,7 +13,6 @@ USERS = {
     "josh@trinityops.io":   "Josh",
 }
 
-# Pre-hashed passwords stored in st.secrets (never in code)
 def _get_hash(email):
     key = email.split("@")[0]
     return st.secrets.get("passwords", {}).get(key, "")
@@ -37,7 +36,6 @@ def login_page():
     [data-testid="stSidebar"] { display: none; }
     </style>
     """, unsafe_allow_html=True)
-
     col1, col2, col3 = st.columns([1, 1.4, 1])
     with col2:
         st.markdown("<div style='height:80px'></div>", unsafe_allow_html=True)
@@ -46,22 +44,22 @@ def login_page():
             <div style='font-size:2.6rem;font-weight:800;color:#a78bfa;letter-spacing:-0.02em;'>
                 Trinity Ops
             </div>
-            <div style='color:#4a6580;font-size:0.9rem;margin-top:4px;letter-spacing:0.08em;text-transform:uppercase;'>
+            <div style='color:#4a6580;font-size:0.9rem;margin-top:4px;
+                        letter-spacing:0.08em;text-transform:uppercase;'>
                 Team Dashboard
             </div>
         </div>
         """, unsafe_allow_html=True)
-
         with st.form("login_form"):
             email    = st.text_input("Email", placeholder="you@trinityops.io")
             password = st.text_input("Password", type="password", placeholder="Password")
-            submit   = st.form_submit_button("Sign In", type="primary", use_container_width=True)
-
+            submit   = st.form_submit_button("Sign In", type="primary",
+                                             use_container_width=True)
         if submit:
             if check_login(email.strip().lower(), password):
-                st.session_state.authenticated  = True
-                st.session_state.user_email     = email.strip().lower()
-                st.session_state.user_name      = USERS[email.strip().lower()]
+                st.session_state.authenticated = True
+                st.session_state.user_email    = email.strip().lower()
+                st.session_state.user_name     = USERS[email.strip().lower()]
                 st.rerun()
             else:
                 st.error("Incorrect email or password.")
@@ -91,10 +89,42 @@ def load_businesses():
         },
     }
 
+# ── Month helpers ──────────────────────────────────────────────────────────────
+
+def get_month_options():
+    """Last 13 months, most recent first."""
+    y, m = date.today().year, date.today().month
+    months = []
+    for _ in range(13):
+        months.append(date(y, m, 1).strftime("%B %Y"))
+        m -= 1
+        if m == 0:
+            m, y = 12, y - 1
+    return months
+
+def month_to_range(month_str):
+    """'April 2026' → ('2026-04-01', '2026-05-01')"""
+    d = datetime.strptime(month_str, "%B %Y").date().replace(day=1)
+    if d.month == 12:
+        end = d.replace(year=d.year + 1, month=1)
+    else:
+        end = d.replace(month=d.month + 1)
+    return d.isoformat(), end.isoformat()
+
+def month_selector(key="month_sel"):
+    options = get_month_options()
+    col, _ = st.columns([2, 5])
+    with col:
+        selected = st.selectbox("📅 Month", options, index=0, key=key)
+    return month_to_range(selected)
+
 # ── Helpers ────────────────────────────────────────────────────────────────────
 
 def fmt_money(n):
     return f"${n:,.0f}"
+
+def fmt_pct(n):
+    return f"{n:.0f}%"
 
 def find_user_ids(users, first_name):
     if not first_name:
@@ -102,21 +132,17 @@ def find_user_ids(users, first_name):
     name = first_name.lower()
     return [u["id"] for u in users if (u.get("first_name") or "").lower() == name]
 
-def _filter_this_month(opps):
-    month_start = date.today().replace(day=1).isoformat()
-    return [o for o in opps if (o.get("date_won") or "") >= month_start]
-
 def _val(opp):
     return (opp.get("value") or 0) / 100
 
-def revenue_this_month(won, user_ids=None):
-    opps = _filter_this_month(won)
+def revenue_in_range(won, month_start, month_end, user_ids=None):
+    opps = [o for o in won if month_start <= (o.get("date_won") or "") < month_end]
     if user_ids:
         opps = [o for o in opps if o.get("user_id") in user_ids]
     return sum(_val(o) for o in opps)
 
-def deals_this_month(won, user_ids=None):
-    opps = _filter_this_month(won)
+def deals_in_range(won, month_start, month_end, user_ids=None):
+    opps = [o for o in won if month_start <= (o.get("date_won") or "") < month_end]
     if user_ids:
         opps = [o for o in opps if o.get("user_id") in user_ids]
     return len(opps)
@@ -150,10 +176,78 @@ def progress_bar(label, current, target):
         </span>
       </div>
       <div style="background:#1a3050;border-radius:8px;height:10px;overflow:hidden;">
-        <div style="width:{pct_int}%;background:{bar_color};height:100%;border-radius:8px;transition:width 0.4s;"></div>
+        <div style="width:{pct_int}%;background:{bar_color};height:100%;
+                    border-radius:8px;transition:width 0.4s;"></div>
       </div>
     </div>
     """, unsafe_allow_html=True)
+
+def kpi_card(label, value, sub=None, color="#e8edf5"):
+    sub_html = f"<div style='color:#4a6580;font-size:0.75rem;margin-top:2px;'>{sub}</div>" if sub else ""
+    st.markdown(f"""
+    <div style="background:#112240;border:1px solid #1a3050;border-radius:10px;
+                padding:16px 20px;box-shadow:0 4px 16px rgba(0,0,0,0.35);">
+      <div style="color:#4a6580;font-size:0.7rem;font-weight:700;
+                  text-transform:uppercase;letter-spacing:0.08em;">{label}</div>
+      <div style="color:{color};font-size:1.7rem;font-weight:800;
+                  letter-spacing:-0.02em;line-height:1.2;margin-top:4px;">{value}</div>
+      {sub_html}
+    </div>
+    """, unsafe_allow_html=True)
+
+# ── Call metrics ───────────────────────────────────────────────────────────────
+
+def get_vibe_call_metrics(api_key, month_start, month_end):
+    """
+    Booked calls  = lead status changes TO 'Call Booked'
+    No-shows      = lead status changes TO "Didn't Show Up"
+    Show rate     = (booked - no_shows) / booked
+    """
+    status_changes, err = close_api.get_status_changes_in_range(
+        api_key, month_start, month_end
+    )
+    booked   = sum(1 for s in status_changes
+                   if (s.get("new_status_label") or "").strip() == "Call Booked")
+    no_shows = sum(1 for s in status_changes
+                   if (s.get("new_status_label") or "").strip() == "Didn't Show Up")
+    shows      = max(booked - no_shows, 0)
+    show_rate  = (shows / booked * 100) if booked > 0 else 0
+    return booked, shows, no_shows, show_rate, err
+
+
+def get_rps_call_metrics(api_key, month_start, month_end):
+    """
+    Booked calls = custom activity '03. Strategy Call Booked'
+    Shows        = custom activity '05. Strategy Call Completed'
+    No-shows     = custom activity '04. Strategy Call Not Completed'
+    Show rate    = shows / (shows + no_shows)
+    """
+    types, err = close_api.get_custom_activity_types(api_key)
+    if err:
+        return 0, 0, 0, 0, err
+
+    type_map = {t.get("name", "").strip(): t.get("id") for t in types}
+    booked_id       = type_map.get("03. Strategy Call Booked")
+    completed_id    = type_map.get("05. Strategy Call Completed")
+    not_complete_id = type_map.get("04. Strategy Call Not Completed")
+
+    booked = no_show = show = 0
+    if booked_id:
+        data, _ = close_api.get_custom_activities_in_range(
+            api_key, booked_id, month_start, month_end)
+        booked = len(data)
+    if completed_id:
+        data, _ = close_api.get_custom_activities_in_range(
+            api_key, completed_id, month_start, month_end)
+        show = len(data)
+    if not_complete_id:
+        data, _ = close_api.get_custom_activities_in_range(
+            api_key, not_complete_id, month_start, month_end)
+        no_show = len(data)
+
+    total_outcome = show + no_show
+    show_rate = (show / total_outcome * 100) if total_outcome > 0 else 0
+    return booked, show, no_show, show_rate, None
 
 # ── CSS ────────────────────────────────────────────────────────────────────────
 
@@ -161,7 +255,6 @@ def inject_css():
     st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-
     html, body, [data-testid="stAppViewContainer"], [data-testid="stMain"], .main {
         background-color: #0a1628 !important;
         font-family: 'Inter', sans-serif;
@@ -206,8 +299,8 @@ def inject_css():
         box-shadow:0 4px 16px rgba(0,0,0,0.35); transition:all 0.2s;
     }
     [data-testid="metric-container"]:hover {
-        border-color:#a78bfa !important; box-shadow:0 4px 24px rgba(167,139,250,0.15);
-        transform:translateY(-1px);
+        border-color:#a78bfa !important;
+        box-shadow:0 4px 24px rgba(167,139,250,0.15); transform:translateY(-1px);
     }
     [data-testid="stMetricLabel"] {
         color:#4a6580 !important; font-size:0.7rem !important; font-weight:700 !important;
@@ -283,9 +376,7 @@ def inject_css():
         background:#112240 !important; border:1px solid #1a3050 !important;
         border-radius:8px !important;
     }
-    [data-testid="stAlert"] {
-        border-radius:8px !important; background:#0d1e35 !important;
-    }
+    [data-testid="stAlert"] { border-radius:8px !important; background:#0d1e35 !important; }
     hr { border-color:#152035 !important; }
     [data-testid="stCaptionContainer"] p { color:#4a6580 !important; font-size:0.78rem !important; }
     </style>
@@ -295,7 +386,11 @@ def inject_css():
 
 def rep_card(rep_name, role, deals, revenue, pipeline, calls):
     with st.container(border=True):
-        st.markdown(f"### {rep_name} &nbsp;<span style='font-size:0.75rem;color:#4a6580;font-weight:500;'>{role}</span>", unsafe_allow_html=True)
+        st.markdown(
+            f"### {rep_name} &nbsp;"
+            f"<span style='font-size:0.75rem;color:#4a6580;font-weight:500;'>{role}</span>",
+            unsafe_allow_html=True
+        )
         c1, c2, c3, c4 = st.columns(4)
         c1.metric("Deals Closed",  deals)
         c2.metric("Revenue",       fmt_money(revenue))
@@ -314,20 +409,24 @@ def page_command_center(BUSINESSES):
             close_api.clear_cache()
             st.rerun()
 
+    month_start, month_end = month_selector("cc_month")
+
     all_data = {}
     for biz_key, biz in BUSINESSES.items():
         with st.spinner(f"Loading {biz['name']}..."):
-            won,    _ = close_api.get_won_this_month(biz["api_key"])
+            won,    _ = close_api.get_won_in_range(biz["api_key"], month_start, month_end)
             active, _ = close_api.get_active_pipeline(biz["api_key"])
-            calls,  _ = close_api.get_calls_this_month(biz["api_key"])
+            calls,  _ = close_api.get_calls_in_range(biz["api_key"], month_start, month_end)
         all_data[biz_key] = {"won": won, "active": active, "calls": calls, "config": biz}
 
-    total_revenue  = sum(revenue_this_month(d["won"]) for d in all_data.values())
+    total_revenue  = sum(revenue_in_range(d["won"], month_start, month_end)
+                         for d in all_data.values())
     total_target   = sum(d["config"]["monthly_target"] for d in all_data.values())
     total_pipeline = sum(pipeline_value(d["active"]) for d in all_data.values())
-    total_deals    = sum(deals_this_month(d["won"]) for d in all_data.values())
+    total_deals    = sum(deals_in_range(d["won"], month_start, month_end)
+                         for d in all_data.values())
 
-    st.subheader("📊 Combined Performance This Month")
+    st.subheader("📊 Combined Performance")
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("Combined Revenue",  fmt_money(total_revenue))
     c2.metric("Combined Target",   fmt_money(total_target))
@@ -337,7 +436,11 @@ def page_command_center(BUSINESSES):
     st.subheader("🎯 Revenue Goals")
     for biz_key, d in all_data.items():
         biz = d["config"]
-        progress_bar(f"{biz['emoji']} {biz['name']}", revenue_this_month(d["won"]), biz["monthly_target"])
+        progress_bar(
+            f"{biz['emoji']} {biz['name']}",
+            revenue_in_range(d["won"], month_start, month_end),
+            biz["monthly_target"]
+        )
 
     st.divider()
     st.subheader("👥 Rep Performance")
@@ -351,8 +454,8 @@ def page_command_center(BUSINESSES):
                 "Business": f"{biz['emoji']} {biz['name']}",
                 "Rep":      rep["name"],
                 "Role":     rep["role"],
-                "Revenue":  fmt_money(revenue_this_month(d["won"], uids)),
-                "Deals":    deals_this_month(d["won"], uids),
+                "Revenue":  fmt_money(revenue_in_range(d["won"], month_start, month_end, uids)),
+                "Deals":    deals_in_range(d["won"], month_start, month_end, uids),
                 "Pipeline": fmt_money(pipeline_value(d["active"], uids)),
                 "Calls":    call_count(d["calls"], uids),
             })
@@ -377,10 +480,12 @@ def page_business(biz_key, BUSINESSES):
             close_api.clear_cache()
             st.rerun()
 
+    month_start, month_end = month_selector(f"biz_month_{biz_key}")
+
     with st.spinner("Loading from Close CRM..."):
-        won,    err1 = close_api.get_won_this_month(api)
+        won,    err1 = close_api.get_won_in_range(api, month_start, month_end)
         active, err2 = close_api.get_active_pipeline(api)
-        calls,  err3 = close_api.get_calls_this_month(api)
+        calls,  err3 = close_api.get_calls_in_range(api, month_start, month_end)
         users,  err4 = close_api.get_users(api)
 
     for err in [err1, err2, err3, err4]:
@@ -396,11 +501,12 @@ def page_business(biz_key, BUSINESSES):
 
     # ── Overview ──────────────────────────────────────────────────────────────
     with tab_overview:
-        rev   = revenue_this_month(won)
-        deals = deals_this_month(won)
+        rev   = revenue_in_range(won, month_start, month_end)
+        deals = deals_in_range(won, month_start, month_end)
         pipe  = pipeline_value(active)
         total_calls = call_count(calls)
 
+        # Core metrics
         st.subheader("This Month")
         c1, c2, c3, c4 = st.columns(4)
         c1.metric("Revenue",       fmt_money(rev))
@@ -411,17 +517,48 @@ def page_business(biz_key, BUSINESSES):
         st.subheader("Revenue Goal")
         progress_bar(biz["name"], rev, target)
 
+        # ── Call KPIs ─────────────────────────────────────────────────────────
+        st.subheader("📞 Call KPIs")
+        with st.spinner("Loading call data..."):
+            if biz_key == "vibe":
+                booked, shows, no_shows, show_rate, call_err = \
+                    get_vibe_call_metrics(api, month_start, month_end)
+            else:
+                booked, shows, no_shows, show_rate, call_err = \
+                    get_rps_call_metrics(api, month_start, month_end)
+
+        if call_err:
+            st.warning(f"Could not load call KPIs: {call_err}")
+        else:
+            rev_per_call = (rev / booked) if booked > 0 else 0
+            k1, k2, k3, k4 = st.columns(4)
+            with k1:
+                kpi_card("Booked Calls", str(booked))
+            with k2:
+                color = "#22c55e" if show_rate >= 70 else ("#f59e0b" if show_rate >= 50 else "#ef4444")
+                kpi_card("Show Rate", fmt_pct(show_rate),
+                         sub=f"{shows} showed · {no_shows} no-showed", color=color)
+            with k3:
+                kpi_card("Revenue / Call", fmt_money(rev_per_call),
+                         sub="Total revenue ÷ booked calls")
+            with k4:
+                kpi_card("No-Shows", str(no_shows))
+
+        st.divider()
+
+        # ── Team performance ──────────────────────────────────────────────────
         st.subheader("Team Performance")
         for rep in reps:
             uids = rep_ids.get(rep["name"])
             rep_card(
                 rep["name"], rep["role"],
-                deals_this_month(won, uids),
-                revenue_this_month(won, uids),
+                deals_in_range(won, month_start, month_end, uids),
+                revenue_in_range(won, month_start, month_end, uids),
                 pipeline_value(active, uids),
                 call_count(calls, uids),
             )
 
+        # ── Recent wins ───────────────────────────────────────────────────────
         if won:
             st.subheader("Recent Wins")
             rows = [
@@ -431,7 +568,7 @@ def page_business(biz_key, BUSINESSES):
             ]
             st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
 
-    # ── Pipeline ──────────────────────────────────────────────────────────────
+    # ── Pipeline tab ──────────────────────────────────────────────────────────
     with tab_pipeline:
         st.subheader("Active Opportunities")
         if active:
@@ -446,7 +583,7 @@ def page_business(biz_key, BUSINESSES):
         else:
             st.info("No active opportunities.")
 
-    # ── Rep Tabs ──────────────────────────────────────────────────────────────
+    # ── Rep tabs ──────────────────────────────────────────────────────────────
     for i, rep in enumerate(reps):
         with rep_tabs[i]:
             uids = rep_ids.get(rep["name"])
@@ -474,7 +611,8 @@ def page_business(biz_key, BUSINESSES):
             if rep_active:
                 st.subheader("Active Pipeline")
                 rows = [{"Lead": o.get("lead_name", ""), "Value": fmt_money(_val(o)),
-                         "Status": o.get("status_label", ""), "Close Date": o.get("close_date", "")}
+                         "Status": o.get("status_label", ""),
+                         "Close Date": o.get("close_date", "")}
                         for o in sorted(rep_active, key=lambda x: x.get("value", 0), reverse=True)]
                 st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
 
@@ -521,20 +659,19 @@ def main():
         user_name = st.session_state.get("user_name", "")
         st.caption(f"Signed in as **{user_name}**")
         if st.button("Sign Out", type="secondary", use_container_width=True):
-            st.session_state.authenticated = False
-            st.session_state.user_email    = ""
-            st.session_state.user_name     = ""
+            for key in ["authenticated", "user_email", "user_name"]:
+                st.session_state[key] = "" if key != "authenticated" else False
             st.rerun()
 
     if "active_section" not in st.session_state:
         st.session_state.active_section = "overview"
 
     if st.session_state.get("_last_overview") != overview_page:
-        st.session_state.active_section      = "overview"
-        st.session_state["_last_overview"]   = overview_page
+        st.session_state.active_section    = "overview"
+        st.session_state["_last_overview"] = overview_page
     elif st.session_state.get("_last_teams") != team_page:
-        st.session_state.active_section    = "teams"
-        st.session_state["_last_teams"]    = team_page
+        st.session_state.active_section  = "teams"
+        st.session_state["_last_teams"]  = team_page
 
     section = st.session_state.active_section
 
