@@ -199,21 +199,19 @@ def kpi_card(label, value, sub=None, color="#e8edf5"):
 
 def get_vibe_call_metrics(api_key, month_start, month_end):
     """
-    Pulls lead status change activity events for the month.
-    Booked calls = times a lead moved TO 'Call Booked' in that month.
-    No-shows     = times a lead moved TO "Didn't Show Up" in that month.
+    Booked calls = meetings with starts_at in the selected month.
+    No-shows     = status changes FROM 'Call booked' TO a no-show status in the month.
     Show rate    = (booked - no_shows) / booked
     """
-    changes, err = close_api.get_lead_status_changes_in_range(
-        api_key, month_start, month_end)
+    meetings, err1 = close_api.get_meetings_in_range(api_key, month_start, month_end)
+    changes,  err2 = close_api.get_lead_status_changes_in_range(api_key, month_start, month_end)
+    err = err1 or err2
     if err:
         return 0, 0, 0, 0, err
 
+    booked = len(meetings)
+
     NO_SHOW_STATUSES = {"didn't show up", "cancelled"}
-    booked   = sum(1 for c in changes
-                   if (c.get("new_status_label") or "").strip().lower() == "call booked")
-    # Only count no-shows where the lead was previously in "Call booked"
-    # This avoids counting unrelated status changes as no-shows
     no_shows = sum(1 for c in changes
                    if (c.get("old_status_label") or "").strip().lower() == "call booked"
                    and (c.get("new_status_label") or "").strip().lower() in NO_SHOW_STATUSES)
@@ -536,10 +534,6 @@ def page_business(biz_key, BUSINESSES):
 
         if call_err:
             st.warning(f"Could not load call KPIs: {call_err}")
-        if biz_key == "vibe":
-            meetings, _ = close_api.get_meetings_in_range(api, month_start, month_end)
-            with st.expander("🔍 Debug — Meeting fields (first result)"):
-                st.json(meetings[0] if meetings else "No meetings found in this month")
         else:
             rev_per_call = (rev / booked) if booked > 0 else 0
             k1, k2, k3, k4 = st.columns(4)

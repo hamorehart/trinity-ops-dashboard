@@ -144,10 +144,10 @@ def get_leads_with_status(api_key, status_label):
 
 @st.cache_data(ttl=1800, show_spinner=False)
 def get_meetings_in_range(api_key, month_start, month_end):
-    """Fetch meeting activities within a date range."""
+    """Fetch meeting activities where the call is scheduled within a date range (by starts_at)."""
     data, err = _paginate(api_key, "activity/meeting", {
-        "date_start__gte": month_start + "T00:00:00.000000",
-        "date_start__lt":  month_end   + "T00:00:00.000000",
+        "starts_at__gte": month_start + "T00:00:00.000000",
+        "starts_at__lt":  month_end   + "T00:00:00.000000",
     })
     return data, err
 
