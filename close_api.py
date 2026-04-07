@@ -144,12 +144,20 @@ def get_leads_with_status(api_key, status_label):
 
 @st.cache_data(ttl=1800, show_spinner=False)
 def get_meetings_in_range(api_key, month_start, month_end):
-    """Fetch meeting activities where the call is scheduled within a date range (by starts_at)."""
+    """
+    Fetch meetings and filter client-side by starts_at within the date range.
+    The Close API doesn't support starts_at filtering directly.
+    """
     data, err = _paginate(api_key, "activity/meeting", {
-        "starts_at__gte": month_start + "T00:00:00.000000",
-        "starts_at__lt":  month_end   + "T00:00:00.000000",
+        "date_created__gte": "2024-01-01T00:00:00.000000",
     })
-    return data, err
+    if err:
+        return [], err
+    filtered = [
+        m for m in data
+        if month_start <= (m.get("starts_at") or "")[:10] < month_end
+    ]
+    return filtered, None
 
 
 @st.cache_data(ttl=1800, show_spinner=False)
