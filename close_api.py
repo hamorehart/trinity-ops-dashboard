@@ -141,7 +141,6 @@ def get_lead_status_changes_in_range(api_key, month_start, month_end):
     data, err = _paginate(api_key, "activity/status_change/lead", {
         "date_created__gte": month_start + "T00:00:00.000000",
         "date_created__lt":  month_end   + "T00:00:00.000000",
-        "_fields":           "id,new_status_label,old_status_label,date_created,lead_id",
     })
     return data, err
 
