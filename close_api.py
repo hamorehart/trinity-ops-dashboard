@@ -156,6 +156,7 @@ def get_meetings_in_range(api_key, month_start, month_end):
     filtered = [
         m for m in data
         if month_start <= (m.get("starts_at") or "")[:10] < month_end
+        and "implementation call" in (m.get("title") or "").lower()
     ]
     return filtered, None
 
