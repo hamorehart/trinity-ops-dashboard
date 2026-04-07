@@ -199,21 +199,24 @@ def kpi_card(label, value, sub=None, color="#e8edf5"):
 
 def get_vibe_call_metrics(api_key, month_start, month_end):
     """
-    Booked calls = leads whose status is 'Call Booked', last updated in the range.
-    No-shows     = leads whose status is "Didn't Show Up", last updated in the range.
+    Pulls lead status change activity events for the month.
+    Booked calls = times a lead moved TO 'Call Booked' in that month.
+    No-shows     = times a lead moved TO "Didn't Show Up" in that month.
     Show rate    = (booked - no_shows) / booked
     """
-    booked_leads, err1 = close_api.get_leads_by_status_in_range(
-        api_key, "Call Booked", month_start, month_end)
-    noshow_leads, err2 = close_api.get_leads_by_status_in_range(
-        api_key, "Didn't Show Up", month_start, month_end)
+    changes, err = close_api.get_lead_status_changes_in_range(
+        api_key, month_start, month_end)
+    if err:
+        return 0, 0, 0, 0, err
 
-    err = err1 or err2
-    booked   = len(booked_leads)
-    no_shows = len(noshow_leads)
-    shows    = max(booked - no_shows, 0)
+    NO_SHOW_STATUSES = {"Didn't Show Up", "Cancelled"}
+    booked   = sum(1 for c in changes
+                   if (c.get("new_status_label") or "").strip() == "Call Booked")
+    no_shows = sum(1 for c in changes
+                   if (c.get("new_status_label") or "").strip() in NO_SHOW_STATUSES)
+    shows     = max(booked - no_shows, 0)
     show_rate = (shows / booked * 100) if booked > 0 else 0
-    return booked, shows, no_shows, show_rate, err
+    return booked, shows, no_shows, show_rate, None
 
 
 def get_rps_call_metrics(api_key, month_start, month_end):
@@ -543,7 +546,7 @@ def page_business(biz_key, BUSINESSES):
                 kpi_card("Revenue / Call", fmt_money(rev_per_call),
                          sub="Total revenue ÷ booked calls")
             with k4:
-                kpi_card("No-Shows", str(no_shows))
+                kpi_card("No-Shows / Cancelled", str(no_shows))
 
         st.divider()
 

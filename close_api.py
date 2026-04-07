@@ -130,16 +130,18 @@ def get_custom_activities_in_range(api_key, type_id, month_start, month_end):
     return data, err
 
 
-# ── Lead status queries (Vibe) ─────────────────────────────────────────────────
+# ── Lead status change activities (Vibe) ──────────────────────────────────────
 
 @st.cache_data(ttl=1800, show_spinner=False)
-def get_leads_by_status_in_range(api_key, status_label, month_start, month_end):
-    """Leads that moved into a given status within a date range (by date_updated)."""
-    data, err = _paginate(api_key, "lead", {
-        "status_label":        status_label,
-        "date_updated__gte":   month_start + "T00:00:00.000000",
-        "date_updated__lt":    month_end   + "T00:00:00.000000",
-        "_fields":             "id,status_label,date_updated",
+def get_lead_status_changes_in_range(api_key, month_start, month_end):
+    """
+    Lead status change activity events within a date range.
+    Each record has new_status_label showing what status the lead moved TO.
+    """
+    data, err = _paginate(api_key, "activity/status_change/lead", {
+        "date_created__gte": month_start + "T00:00:00.000000",
+        "date_created__lt":  month_end   + "T00:00:00.000000",
+        "_fields":           "id,new_status_label,old_status_label,date_created,lead_id",
     })
     return data, err
 
@@ -154,4 +156,4 @@ def clear_cache():
     get_calls_in_range.clear()
     get_custom_activity_types.clear()
     get_custom_activities_in_range.clear()
-    get_leads_by_status_in_range.clear()
+    get_lead_status_changes_in_range.clear()
