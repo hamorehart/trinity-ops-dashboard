@@ -536,6 +536,10 @@ def page_business(biz_key, BUSINESSES):
 
         if call_err:
             st.warning(f"Could not load call KPIs: {call_err}")
+        if biz_key == "vibe":
+            sample, _ = close_api.get_leads_with_status(api, "Call Booked")
+            with st.expander("🔍 Debug — Call Booked lead fields (first result)"):
+                st.json(sample[0] if sample else "No Call Booked leads found")
         else:
             rev_per_call = (rev / booked) if booked > 0 else 0
             k1, k2, k3, k4 = st.columns(4)

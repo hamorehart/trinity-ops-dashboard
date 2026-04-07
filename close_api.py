@@ -133,6 +133,16 @@ def get_custom_activities_in_range(api_key, type_id, month_start, month_end):
 # ── Lead status change activities (Vibe) ──────────────────────────────────────
 
 @st.cache_data(ttl=1800, show_spinner=False)
+def get_leads_with_status(api_key, status_label):
+    """Fetch leads currently in a given status."""
+    data, err = _paginate(api_key, "lead", {
+        "status_label": status_label,
+        "_limit": 5,
+    })
+    return data, err
+
+
+@st.cache_data(ttl=1800, show_spinner=False)
 def get_lead_status_changes_in_range(api_key, month_start, month_end):
     """
     Lead status change activity events within a date range.
