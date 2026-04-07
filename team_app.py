@@ -199,19 +199,20 @@ def kpi_card(label, value, sub=None, color="#e8edf5"):
 
 def get_vibe_call_metrics(api_key, month_start, month_end):
     """
-    Booked calls  = lead status changes TO 'Call Booked'
-    No-shows      = lead status changes TO "Didn't Show Up"
-    Show rate     = (booked - no_shows) / booked
+    Booked calls = leads whose status is 'Call Booked', last updated in the range.
+    No-shows     = leads whose status is "Didn't Show Up", last updated in the range.
+    Show rate    = (booked - no_shows) / booked
     """
-    status_changes, err = close_api.get_status_changes_in_range(
-        api_key, month_start, month_end
-    )
-    booked   = sum(1 for s in status_changes
-                   if (s.get("new_status_label") or "").strip() == "Call Booked")
-    no_shows = sum(1 for s in status_changes
-                   if (s.get("new_status_label") or "").strip() == "Didn't Show Up")
-    shows      = max(booked - no_shows, 0)
-    show_rate  = (shows / booked * 100) if booked > 0 else 0
+    booked_leads, err1 = close_api.get_leads_by_status_in_range(
+        api_key, "Call Booked", month_start, month_end)
+    noshow_leads, err2 = close_api.get_leads_by_status_in_range(
+        api_key, "Didn't Show Up", month_start, month_end)
+
+    err = err1 or err2
+    booked   = len(booked_leads)
+    no_shows = len(noshow_leads)
+    shows    = max(booked - no_shows, 0)
+    show_rate = (shows / booked * 100) if booked > 0 else 0
     return booked, shows, no_shows, show_rate, err
 
 
