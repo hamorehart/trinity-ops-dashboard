@@ -212,8 +212,11 @@ def get_vibe_call_metrics(api_key, month_start, month_end):
     NO_SHOW_STATUSES = {"didn't show up", "cancelled"}
     booked   = sum(1 for c in changes
                    if (c.get("new_status_label") or "").strip().lower() == "call booked")
+    # Only count no-shows where the lead was previously in "Call booked"
+    # This avoids counting unrelated status changes as no-shows
     no_shows = sum(1 for c in changes
-                   if (c.get("new_status_label") or "").strip().lower() in NO_SHOW_STATUSES)
+                   if (c.get("old_status_label") or "").strip().lower() == "call booked"
+                   and (c.get("new_status_label") or "").strip().lower() in NO_SHOW_STATUSES)
     shows     = max(booked - no_shows, 0)
     show_rate = (shows / booked * 100) if booked > 0 else 0
     return booked, shows, no_shows, show_rate, None
