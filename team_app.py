@@ -223,46 +223,26 @@ def get_vibe_call_metrics(api_key, month_start, month_end):
 
 def get_rps_call_metrics(api_key, month_start, month_end):
     """
-    Booked calls = custom activity '03. Strategy Call Booked'
-    Shows        = custom activity '05. Strategy Call Completed'
-    No-shows     = custom activity '04. Strategy Call Not Completed'
+    Booked calls = 03. Strategy Call Booked  (actitype_6iPyMCXtUDMCc1WrQbxk38)
+    Shows        = 05. Strategy Call Completed (actitype_1wbEHsXgDc5pI0uDad4vJA)
+    No-shows     = 04. Strategy Call Not Completed (actitype_2A7bh2nzYu3lzTj5oVI7Ly)
     Show rate    = shows / (shows + no_shows)
-    Returns (booked, show, no_show, show_rate, err, debug_info)
     """
-    types, err = close_api.get_custom_activity_types(api_key)
+    BOOKED_ID    = "actitype_6iPyMCXtUDMCc1WrQbxk38"
+    COMPLETED_ID = "actitype_1wbEHsXgDc5pI0uDad4vJA"
+    NO_SHOW_ID   = "actitype_2A7bh2nzYu3lzTj5oVI7Ly"
+
+    all_acts, err = close_api.get_all_custom_activities_in_range(api_key, month_start, month_end)
     if err:
-        return 0, 0, 0, 0, err, {}
+        return 0, 0, 0, 0, err
 
-    # Case-insensitive type map
-    type_map = {t.get("name", "").strip().lower(): t.get("id") for t in types}
-    booked_id       = type_map.get("03. strategy call booked")
-    completed_id    = type_map.get("05. strategy call completed")
-    not_complete_id = type_map.get("04. strategy call not completed")
-
-    # Fetch counts for every discovered type so we can identify them by count
-    type_counts = {}
-    for t in types:
-        tid = t.get("id")
-        if tid:
-            d, _ = close_api.get_custom_activities_in_range(api_key, tid, month_start, month_end)
-            type_counts[tid] = len(d)
-
-    debug_info = {
-        "types_raw": types,
-        "type_counts": type_counts,
-    }
-
-    booked = no_show = show = 0
-    if booked_id:
-        booked = type_counts.get(booked_id, 0)
-    if completed_id:
-        show = type_counts.get(completed_id, 0)
-    if not_complete_id:
-        no_show = type_counts.get(not_complete_id, 0)
+    booked  = sum(1 for a in all_acts if a.get("custom_activity_type_id") == BOOKED_ID)
+    show    = sum(1 for a in all_acts if a.get("custom_activity_type_id") == COMPLETED_ID)
+    no_show = sum(1 for a in all_acts if a.get("custom_activity_type_id") == NO_SHOW_ID)
 
     total_outcome = show + no_show
     show_rate = (show / total_outcome * 100) if total_outcome > 0 else 0
-    return booked, show, no_show, show_rate, None, debug_info
+    return booked, show, no_show, show_rate, None
 
 # ── CSS ────────────────────────────────────────────────────────────────────────
 
@@ -538,9 +518,8 @@ def page_business(biz_key, BUSINESSES):
             if biz_key == "vibe":
                 booked, shows, no_shows, show_rate, call_err, booked_meetings = \
                     get_vibe_call_metrics(api, month_start, month_end)
-                rps_debug = {}
             else:
-                booked, shows, no_shows, show_rate, call_err, rps_debug = \
+                booked, shows, no_shows, show_rate, call_err = \
                     get_rps_call_metrics(api, month_start, month_end)
                 booked_meetings = []
 
@@ -574,15 +553,6 @@ def page_business(biz_key, BUSINESSES):
                     ]
                     st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
 
-            if biz_key == "rps" and rps_debug:
-                with st.expander("Debug: RPS activity type counts this month"):
-                    counts = rps_debug.get("type_counts") or {}
-                    rows = [{"Type ID": tid, "Count this month": cnt}
-                            for tid, cnt in sorted(counts.items(), key=lambda x: -x[1])]
-                    if rows:
-                        st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
-                    else:
-                        st.write("No types found.")
 
         st.divider()
 
