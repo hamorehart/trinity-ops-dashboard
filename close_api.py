@@ -158,22 +158,21 @@ def get_custom_activity_types(api_key):
 
 
 @st.cache_data(ttl=1800, show_spinner=False)
-def get_custom_activities_in_range(api_key, type_id, month_start, month_end):
-    """Custom activities of a specific type within a date range."""
-    # Try type_id in the URL path first (preferred Close CRM format)
-    data, err = _paginate(api_key, f"activity/custom/{type_id}", {
-        "date_created__gte": month_start + "T00:00:00.000000",
-        "date_created__lt":  month_end   + "T00:00:00.000000",
-    })
-    if not err:
-        return data, None
-    # Fallback: type_id as query parameter
+def get_all_custom_activities_in_range(api_key, month_start, month_end):
+    """Fetch all custom activities in a date range (all types)."""
     data, err = _paginate(api_key, "activity/custom", {
-        "custom_activity_type_id": type_id,
         "date_created__gte": month_start + "T00:00:00.000000",
         "date_created__lt":  month_end   + "T00:00:00.000000",
     })
     return data, err
+
+
+def get_custom_activities_in_range(api_key, type_id, month_start, month_end):
+    """Custom activities of a specific type within a date range."""
+    all_data, err = get_all_custom_activities_in_range(api_key, month_start, month_end)
+    if err:
+        return [], err
+    return [a for a in all_data if a.get("custom_activity_type_id") == type_id], None
 
 
 # ── Lead status change activities (Vibe) ──────────────────────────────────────
@@ -298,6 +297,6 @@ def clear_cache():
     get_won_in_range.clear()
     get_calls_in_range.clear()
     get_custom_activity_types.clear()
-    get_custom_activities_in_range.clear()
+    get_all_custom_activities_in_range.clear()
     get_meetings_in_range.clear()
     get_lead_status_changes_in_range.clear()
