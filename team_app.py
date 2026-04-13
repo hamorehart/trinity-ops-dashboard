@@ -652,8 +652,8 @@ def page_team(biz_key, BUSINESSES):
     pipe  = pipeline_value(active)
     total_calls_count = call_count(calls)
 
-    # Row 1: 5 KPI cards
-    k1, k2, k3, k4, k5 = st.columns(5)
+    # Row 1: 6 KPI cards
+    k1, k2, k3, k4, k5, k6 = st.columns(6)
     pct = (rev / target * 100) if target > 0 else 0
     rev_color = "#22c55e" if pct >= 100 else ("#f59e0b" if pct >= 50 else "#ef4444")
     with k1:
@@ -664,7 +664,10 @@ def page_team(biz_key, BUSINESSES):
     with k3:
         kpi_card("Deals Closed", str(deals))
     with k4:
-        kpi_card("Calls Made", str(total_calls_count))
+        if call_err:
+            kpi_card("Booked Calls", "—")
+        else:
+            kpi_card("Booked Calls", str(booked))
     with k5:
         if call_err:
             kpi_card("Show Rate", "—")
@@ -672,6 +675,8 @@ def page_team(biz_key, BUSINESSES):
             sr_color = "#22c55e" if show_rate >= 70 else ("#f59e0b" if show_rate >= 50 else "#ef4444")
             kpi_card("Show Rate", fmt_pct(show_rate),
                      sub=f"{shows} shows · {no_shows} no-shows", color=sr_color)
+    with k6:
+        kpi_card("Calls Made", str(total_calls_count))
 
     st.markdown("<div style='height:14px'></div>", unsafe_allow_html=True)
 
