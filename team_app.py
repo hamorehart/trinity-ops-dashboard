@@ -45,7 +45,7 @@ def login_page():
             <div style='font-size:2.6rem;font-weight:800;color:#a78bfa;letter-spacing:-0.02em;'>
                 Trinity Ops
             </div>
-            <div style='color:#4a6580;font-size:0.9rem;margin-top:4px;
+            <div style='color:#ffffff;font-size:0.9rem;margin-top:4px;
                         letter-spacing:0.08em;text-transform:uppercase;'>
                 Team Dashboard
             </div>
@@ -215,12 +215,12 @@ def inject_css():
     [data-testid="stSidebar"] p,
     [data-testid="stSidebar"] span,
     [data-testid="stSidebar"] label,
-    [data-testid="stSidebar"] div { color: #7a93b8 !important; font-size:0.85rem; }
+    [data-testid="stSidebar"] div { color: #ffffff !important; font-size:0.85rem; }
     [data-testid="stSidebar"] [data-testid="stMetricValue"] {
         color:#a78bfa !important; font-weight:800 !important; font-size:1.4rem !important;
     }
     [data-testid="stSidebar"] [data-testid="stMetricLabel"] {
-        color:#4a6580 !important; font-size:0.7rem !important;
+        color:#ffffff !important; font-size:0.7rem !important;
         text-transform:uppercase; letter-spacing:0.08em;
     }
     [data-testid="stSidebar"] hr { border-color:#131620 !important; margin:10px 0 !important; }
@@ -244,7 +244,7 @@ def inject_css():
         box-shadow:0 4px 24px rgba(167,139,250,0.15); transform:translateY(-1px);
     }
     [data-testid="stMetricLabel"] {
-        color:#4a6580 !important; font-size:0.7rem !important; font-weight:700 !important;
+        color:#ffffff !important; font-size:0.7rem !important; font-weight:700 !important;
         text-transform:uppercase; letter-spacing:0.08em;
     }
     [data-testid="stMetricValue"] {
@@ -262,7 +262,7 @@ def inject_css():
         transform:translateY(-1px); box-shadow:0 6px 22px rgba(167,139,250,0.5);
     }
     .stButton > button[kind="secondary"] {
-        border:1px solid #1a1f2e !important; color:#7a93b8 !important;
+        border:1px solid #1a1f2e !important; color:#ffffff !important;
         background:#0e1117 !important;
     }
     .stButton > button[kind="secondary"]:hover {
@@ -307,19 +307,19 @@ def inject_css():
     }
     [data-testid="stAlert"] { border-radius:8px !important; background:#0a0c12 !important; }
     hr { border-color:#131620 !important; }
-    [data-testid="stCaptionContainer"] p { color:#4a6580 !important; font-size:0.78rem !important; }
+    [data-testid="stCaptionContainer"] p { color:#ffffff !important; font-size:0.78rem !important; }
     </style>
     """, unsafe_allow_html=True)
 
 # ── UI Components ──────────────────────────────────────────────────────────────
 
 def kpi_card(label, value, sub=None, color="#e8edf5", accent=False):
-    sub_html = f"<div style='color:#4a6580;font-size:0.75rem;margin-top:2px;'>{sub}</div>" if sub else ""
+    sub_html = f"<div style='color:#ffffff;font-size:0.75rem;margin-top:2px;'>{sub}</div>" if sub else ""
     border_left = "border-left:3px solid #a78bfa;" if accent else ""
     st.markdown(f"""
     <div style="background:#0e1117;border:1px solid #1a1f2e;border-radius:10px;
                 padding:16px 20px;box-shadow:0 4px 16px rgba(0,0,0,0.5);{border_left}">
-      <div style="color:#4a6580;font-size:0.7rem;font-weight:700;
+      <div style="color:#ffffff;font-size:0.7rem;font-weight:700;
                   text-transform:uppercase;letter-spacing:0.08em;">{label}</div>
       <div style="color:{color};font-size:1.7rem;font-weight:800;
                   letter-spacing:-0.02em;line-height:1.2;margin-top:4px;">{value}</div>
@@ -378,9 +378,9 @@ def chart_revenue_by_rep(rep_names, revenues, title="Revenue by Rep"):
     ))
     layout = _plotly_base_layout(height=max(160, len(names) * 55))
     layout.update(
-        title=dict(text=title, font=dict(size=12, color="#7a93b8"), x=0, pad=dict(l=0)),
+        title=dict(text=title, font=dict(size=12, color="#ffffff"), x=0, pad=dict(l=0)),
         xaxis=dict(showgrid=True, gridcolor="#1a1f2e", gridwidth=1,
-                   tickformat="$,.0f", tickfont=dict(color="#4a6580", size=10),
+                   tickformat="$,.0f", tickfont=dict(color="#ffffff", size=10),
                    zeroline=False, showline=False),
         yaxis=dict(showgrid=False, tickfont=dict(color="#ffffff", size=11),
                    zeroline=False, showline=False),
@@ -403,9 +403,9 @@ def chart_calls_by_rep(rep_names, call_counts, title="Calls by Rep"):
     ))
     layout = _plotly_base_layout(height=max(160, len(names) * 55))
     layout.update(
-        title=dict(text=title, font=dict(size=12, color="#7a93b8"), x=0),
+        title=dict(text=title, font=dict(size=12, color="#ffffff"), x=0),
         xaxis=dict(showgrid=True, gridcolor="#1a1f2e",
-                   tickfont=dict(color="#4a6580", size=10),
+                   tickfont=dict(color="#ffffff", size=10),
                    zeroline=False, showline=False),
         yaxis=dict(showgrid=False, tickfont=dict(color="#ffffff", size=11)),
     )
@@ -424,10 +424,10 @@ def chart_show_rate_gauge(show_rate_pct, title="Show Rate"):
         mode="gauge+number",
         value=show_rate_pct,
         number=dict(suffix="%", font=dict(size=36, color="#e8edf5", family="Inter")),
-        title=dict(text=title, font=dict(size=12, color="#7a93b8", family="Inter")),
+        title=dict(text=title, font=dict(size=12, color="#ffffff", family="Inter")),
         gauge=dict(
             axis=dict(range=[0, 100], tickwidth=1, tickcolor="#1a1f2e",
-                      tickfont=dict(color="#4a6580", size=9), dtick=25),
+                      tickfont=dict(color="#ffffff", size=9), dtick=25),
             bar=dict(color=bar_color, thickness=0.25),
             bgcolor="rgba(0,0,0,0)",
             borderwidth=0,
@@ -458,11 +458,11 @@ def chart_team_comparison(vibe_rev, rps_rev, vibe_name="Vibe", rps_name="RPS"):
     ])
     layout = _plotly_base_layout(height=240)
     layout.update(
-        title=dict(text="Revenue by Team", font=dict(size=12, color="#7a93b8"), x=0),
+        title=dict(text="Revenue by Team", font=dict(size=12, color="#ffffff"), x=0),
         barmode="group", bargap=0.35,
         xaxis=dict(showgrid=False, tickfont=dict(color="#ffffff")),
         yaxis=dict(showgrid=True, gridcolor="#1a1f2e",
-                   tickformat="$,.0f", tickfont=dict(color="#4a6580", size=10),
+                   tickformat="$,.0f", tickfont=dict(color="#ffffff", size=10),
                    zeroline=False),
         showlegend=False,
     )
@@ -477,7 +477,7 @@ def page_master(BUSINESSES):
     with h1:
         st.markdown("""
         <h1 style='margin-bottom:0;'>🔺 Trinity Ops</h1>
-        <div style='color:#4a6580;font-size:0.78rem;text-transform:uppercase;
+        <div style='color:#ffffff;font-size:0.78rem;text-transform:uppercase;
                     letter-spacing:0.1em;margin-top:2px;'>Master Dashboard</div>
         """, unsafe_allow_html=True)
     with h2:
@@ -559,7 +559,7 @@ def page_master(BUSINESSES):
 
     # Row 3: Revenue goal progress bars
     with st.container(border=True):
-        st.markdown("<div style='font-size:0.7rem;font-weight:700;color:#4a6580;"
+        st.markdown("<div style='font-size:0.7rem;font-weight:700;color:#ffffff;"
                     "text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;'>"
                     "Revenue Goals</div>", unsafe_allow_html=True)
         for biz_key, d in all_data.items():
@@ -574,7 +574,7 @@ def page_master(BUSINESSES):
 
     # Row 4: Rep performance table
     with st.container(border=True):
-        st.markdown("<div style='font-size:0.7rem;font-weight:700;color:#4a6580;"
+        st.markdown("<div style='font-size:0.7rem;font-weight:700;color:#ffffff;"
                     "text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;'>"
                     "Rep Performance</div>", unsafe_allow_html=True)
         rows = []
@@ -700,7 +700,7 @@ def page_team(biz_key, BUSINESSES):
                 st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
                 st.markdown(f"""
                 <div style='text-align:center;margin-top:-8px;'>
-                    <span style='color:#4a6580;font-size:0.7rem;text-transform:uppercase;
+                    <span style='color:#ffffff;font-size:0.7rem;text-transform:uppercase;
                                  letter-spacing:0.08em;'>
                         {booked} booked · {shows} shows · {no_shows} no-shows
                     </span>
@@ -720,7 +720,7 @@ def page_team(biz_key, BUSINESSES):
 
     with goal_col:
         with st.container(border=True):
-            st.markdown("<div style='font-size:0.7rem;font-weight:700;color:#4a6580;"
+            st.markdown("<div style='font-size:0.7rem;font-weight:700;color:#ffffff;"
                         "text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;'>"
                         "Revenue Goal</div>", unsafe_allow_html=True)
             progress_bar(biz["name"], rev, target)
@@ -738,7 +738,7 @@ def page_team(biz_key, BUSINESSES):
 
     with wins_col:
         with st.container(border=True):
-            st.markdown("<div style='font-size:0.7rem;font-weight:700;color:#4a6580;"
+            st.markdown("<div style='font-size:0.7rem;font-weight:700;color:#ffffff;"
                         "text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;'>"
                         "Recent Wins</div>", unsafe_allow_html=True)
             if won:
@@ -754,7 +754,7 @@ def page_team(biz_key, BUSINESSES):
 
     with pipe_col:
         with st.container(border=True):
-            st.markdown(f"<div style='font-size:0.7rem;font-weight:700;color:#4a6580;"
+            st.markdown(f"<div style='font-size:0.7rem;font-weight:700;color:#ffffff;"
                         f"text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;'>"
                         f"Active Pipeline · {fmt_money(pipe)}</div>", unsafe_allow_html=True)
             if active:
@@ -773,7 +773,7 @@ def page_team(biz_key, BUSINESSES):
 
     # Row 5: Individual rep detail via selectbox
     with st.container(border=True):
-        st.markdown("<div style='font-size:0.7rem;font-weight:700;color:#4a6580;"
+        st.markdown("<div style='font-size:0.7rem;font-weight:700;color:#ffffff;"
                     "text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;'>"
                     "Individual Rep Detail</div>", unsafe_allow_html=True)
 
@@ -803,7 +803,7 @@ def page_team(biz_key, BUSINESSES):
             r1, r2 = st.columns(2)
             with r1:
                 if rep_won:
-                    st.markdown("<div style='font-size:0.7rem;color:#4a6580;text-transform:uppercase;"
+                    st.markdown("<div style='font-size:0.7rem;color:#ffffff;text-transform:uppercase;"
                                 "letter-spacing:0.08em;margin-bottom:6px;'>Wins</div>",
                                 unsafe_allow_html=True)
                     rows = [{"Lead": o.get("lead_name", ""), "Value": fmt_money(_val(o)),
@@ -813,7 +813,7 @@ def page_team(biz_key, BUSINESSES):
                     st.caption("No wins this month.")
             with r2:
                 if rep_actv:
-                    st.markdown("<div style='font-size:0.7rem;color:#4a6580;text-transform:uppercase;"
+                    st.markdown("<div style='font-size:0.7rem;color:#ffffff;text-transform:uppercase;"
                                 "letter-spacing:0.08em;margin-bottom:6px;'>Active Pipeline</div>",
                                 unsafe_allow_html=True)
                     rows = [{"Lead": o.get("lead_name", ""), "Value": fmt_money(_val(o)),
@@ -864,7 +864,7 @@ def main():
         st.markdown("""
         <div style='padding:4px 0 12px 0;'>
             <div style='font-size:1.3rem;font-weight:800;color:#a78bfa;'>🔺 Trinity Ops</div>
-            <div style='font-size:0.7rem;color:#4a6580;text-transform:uppercase;
+            <div style='font-size:0.7rem;color:#ffffff;text-transform:uppercase;
                         letter-spacing:0.1em;margin-top:2px;'>Team Dashboard</div>
         </div>
         """, unsafe_allow_html=True)
