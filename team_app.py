@@ -241,6 +241,7 @@ def get_rps_call_metrics(api_key, month_start, month_end):
 
     debug_info = {
         "types_found": [t.get("name", "") for t in types],
+        "types_raw": types,
         "booked_id": booked_id,
         "completed_id": completed_id,
         "not_complete_id": not_complete_id,
@@ -576,10 +577,8 @@ def page_business(biz_key, BUSINESSES):
 
             if biz_key == "rps" and rps_debug:
                 with st.expander("Debug: RPS activity types found"):
-                    st.write("**Types found in Close CRM:**", rps_debug.get("types_found") or "none")
-                    st.write("Booked ID matched:", rps_debug.get("booked_id") or "not matched")
-                    st.write("Completed ID matched:", rps_debug.get("completed_id") or "not matched")
-                    st.write("Not Completed ID matched:", rps_debug.get("not_complete_id") or "not matched")
+                    st.write("**Raw type objects:**")
+                    st.json(rps_debug.get("types_raw") or [])
 
         st.divider()
 
