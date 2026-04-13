@@ -145,12 +145,17 @@ def get_leads_with_status(api_key, status_label):
 @st.cache_data(ttl=1800, show_spinner=False)
 def get_meetings_in_range(api_key, month_start, month_end):
     """
-    Fetch implementation call meetings created (booked via API) within the date
-    range. Excludes cancellations, reschedule notifications, and past-month
-    calls. Deduplicates by lead so rebooks count once.
+    Fetch implementation call meetings where the call date (starts_at) falls
+    within the selected month. Fetches a 90-day prior window to capture calls
+    booked in advance. Excludes reschedule notifications. Deduplicates by lead
+    so rebooks count once.
     """
+    import datetime
+    dt_start = datetime.date.fromisoformat(month_start)
+    window_start = (dt_start - datetime.timedelta(days=90)).isoformat()
+
     data, err = _paginate(api_key, "activity/meeting", {
-        "date_created__gte": month_start + "T00:00:00.000000",
+        "date_created__gte": window_start + "T00:00:00.000000",
         "date_created__lt":  month_end   + "T00:00:00.000000",
     })
     if err:
@@ -165,9 +170,9 @@ def get_meetings_in_range(api_key, month_start, month_end):
             continue
         if title.startswith("updated -"):
             continue
-        # Only count calls scheduled in the selected month (not reimported old calls)
-        starts_at_month = (m.get("starts_at") or "")[:7]
-        if starts_at_month < month_start[:7]:
+        # Only count calls whose scheduled date falls within the selected month
+        starts_at = (m.get("starts_at") or "")[:10]
+        if not (month_start <= starts_at < month_end):
             continue
         filtered.append(m)
 
