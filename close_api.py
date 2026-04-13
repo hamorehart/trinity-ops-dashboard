@@ -196,14 +196,30 @@ def get_meetings_in_range(api_key, month_start, month_end):
         "date_created__gte": history_start + "T00:00:00.000000",
         "date_created__lt":  window_start  + "T00:00:00.000000",
     })
+
     prior_lead_ids = set()
+
+    # Check the dedicated history window (months 4–12 before selected month)
     for m in history_data:
         title = (m.get("title") or "").strip().lower()
         if "implementation call" not in title:
             continue
-        if title.startswith("canceled:"):
+        if title.startswith("canceled:") or title.startswith("updated -"):
             continue
-        if title.startswith("updated -"):
+        lid = m.get("lead_id")
+        if lid:
+            prior_lead_ids.add(lid)
+
+    # Also check the 90-day window data for calls whose call date was BEFORE this month
+    # (covers the gap between window_start and month_start)
+    for m in data:
+        starts_at = (m.get("starts_at") or "")[:10]
+        if starts_at >= month_start:
+            continue  # April call — not prior history
+        title = (m.get("title") or "").strip().lower()
+        if "implementation call" not in title:
+            continue
+        if title.startswith("canceled:") or title.startswith("updated -"):
             continue
         lid = m.get("lead_id")
         if lid:
