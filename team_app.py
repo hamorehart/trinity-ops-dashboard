@@ -202,12 +202,13 @@ def get_vibe_call_metrics(api_key, month_start, month_end):
     Booked calls = meetings with starts_at in the selected month.
     No-shows     = status changes FROM 'Call booked' TO a no-show status in the month.
     Show rate    = (booked - no_shows) / booked
+    Returns (booked, shows, no_shows, show_rate, err, meetings_list)
     """
     meetings, err1 = close_api.get_meetings_in_range(api_key, month_start, month_end)
     changes,  err2 = close_api.get_lead_status_changes_in_range(api_key, month_start, month_end)
     err = err1 or err2
     if err:
-        return 0, 0, 0, 0, err
+        return 0, 0, 0, 0, err, []
 
     booked = len(meetings)
 
@@ -217,7 +218,7 @@ def get_vibe_call_metrics(api_key, month_start, month_end):
                    and (c.get("new_status_label") or "").strip().lower() in NO_SHOW_STATUSES)
     shows     = max(booked - no_shows, 0)
     show_rate = (shows / booked * 100) if booked > 0 else 0
-    return booked, shows, no_shows, show_rate, None
+    return booked, shows, no_shows, show_rate, None, meetings
 
 
 def get_rps_call_metrics(api_key, month_start, month_end):
@@ -526,11 +527,12 @@ def page_business(biz_key, BUSINESSES):
         st.subheader("📞 Call KPIs")
         with st.spinner("Loading call data..."):
             if biz_key == "vibe":
-                booked, shows, no_shows, show_rate, call_err = \
+                booked, shows, no_shows, show_rate, call_err, booked_meetings = \
                     get_vibe_call_metrics(api, month_start, month_end)
             else:
                 booked, shows, no_shows, show_rate, call_err = \
                     get_rps_call_metrics(api, month_start, month_end)
+                booked_meetings = []
 
         if call_err:
             st.warning(f"Could not load call KPIs: {call_err}")
@@ -548,6 +550,19 @@ def page_business(biz_key, BUSINESSES):
                          sub="Total revenue ÷ booked calls")
             with k4:
                 kpi_card("No-Shows / Cancelled", str(no_shows))
+
+            if biz_key == "vibe" and booked_meetings:
+                with st.expander(f"See all {booked} booked calls"):
+                    rows = [
+                        {
+                            "Lead": m.get("lead_name") or m.get("contact_name") or "—",
+                            "Title": (m.get("title") or "").replace("Implementation Call - Danie + ", "").replace("Implementation Call - ", ""),
+                            "Call Date": (m.get("starts_at") or "")[:10],
+                            "Booked On": (m.get("date_created") or "")[:10],
+                        }
+                        for m in sorted(booked_meetings, key=lambda x: x.get("starts_at", ""))
+                    ]
+                    st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
 
         st.divider()
 
