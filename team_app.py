@@ -42,7 +42,7 @@ def login_page():
         st.markdown("<div style='height:80px'></div>", unsafe_allow_html=True)
         st.markdown("""
         <div style='text-align:center;margin-bottom:32px;'>
-            <div style='font-size:2.6rem;font-weight:800;color:#7c3aed;letter-spacing:-0.02em;'>
+            <div style='font-size:2.6rem;font-weight:800;color:#a78bfa;letter-spacing:-0.02em;'>
                 Trinity Ops
             </div>
             <div style='color:#4a6580;font-size:0.9rem;margin-top:4px;
@@ -217,7 +217,7 @@ def inject_css():
     [data-testid="stSidebar"] label,
     [data-testid="stSidebar"] div { color: #7a93b8 !important; font-size:0.85rem; }
     [data-testid="stSidebar"] [data-testid="stMetricValue"] {
-        color:#7c3aed !important; font-weight:800 !important; font-size:1.4rem !important;
+        color:#a78bfa !important; font-weight:800 !important; font-size:1.4rem !important;
     }
     [data-testid="stSidebar"] [data-testid="stMetricLabel"] {
         color:#4a6580 !important; font-size:0.7rem !important;
@@ -229,19 +229,19 @@ def inject_css():
     [data-testid="stSidebar"] h3 {
         color:#e8edf5 !important; font-size:1rem !important; font-weight:700 !important;
     }
-    h1 { color:#7c3aed !important; font-weight:800 !important; font-size:1.6rem !important;
+    h1 { color:#a78bfa !important; font-weight:800 !important; font-size:1.6rem !important;
          letter-spacing:-0.02em; margin-bottom:2px !important; }
-    h2 { color:#c8d8eb !important; font-weight:700 !important; font-size:1.1rem !important; }
-    h3 { color:#a8bdd4 !important; font-weight:600 !important; font-size:0.98rem !important; }
-    p, li { color:#a8bdd4; font-size:0.88rem; }
+    h2 { color:#ffffff !important; font-weight:700 !important; font-size:1.1rem !important; }
+    h3 { color:#ffffff !important; font-weight:600 !important; font-size:0.98rem !important; }
+    p, li { color:#ffffff; font-size:0.88rem; }
     [data-testid="metric-container"] {
         background:#0e1117 !important; border:1px solid #1a1f2e !important;
         border-radius:10px; padding:16px 20px !important;
         box-shadow:0 4px 16px rgba(0,0,0,0.5); transition:all 0.2s;
     }
     [data-testid="metric-container"]:hover {
-        border-color:#7c3aed !important;
-        box-shadow:0 4px 24px rgba(124,58,237,0.15); transform:translateY(-1px);
+        border-color:#a78bfa !important;
+        box-shadow:0 4px 24px rgba(167,139,250,0.15); transform:translateY(-1px);
     }
     [data-testid="stMetricLabel"] {
         color:#4a6580 !important; font-size:0.7rem !important; font-weight:700 !important;
@@ -254,20 +254,20 @@ def inject_css():
     .stButton > button { border-radius:7px; font-weight:600; font-size:0.83rem;
         transition:all 0.18s; letter-spacing:0.02em; }
     .stButton > button[kind="primary"] {
-        background:linear-gradient(135deg,#5b21b6 0%,#7c3aed 100%) !important;
+        background:linear-gradient(135deg,#7c3aed 0%,#a78bfa 100%) !important;
         border:none !important; color:white !important;
-        box-shadow:0 2px 12px rgba(124,58,237,0.35); font-weight:700 !important;
+        box-shadow:0 2px 12px rgba(167,139,250,0.35); font-weight:700 !important;
     }
     .stButton > button[kind="primary"]:hover {
-        transform:translateY(-1px); box-shadow:0 6px 22px rgba(124,58,237,0.5);
+        transform:translateY(-1px); box-shadow:0 6px 22px rgba(167,139,250,0.5);
     }
     .stButton > button[kind="secondary"] {
         border:1px solid #1a1f2e !important; color:#7a93b8 !important;
         background:#0e1117 !important;
     }
     .stButton > button[kind="secondary"]:hover {
-        background:#141824 !important; border-color:#7c3aed !important;
-        color:#7c3aed !important;
+        background:#141824 !important; border-color:#a78bfa !important;
+        color:#a78bfa !important;
     }
     [data-testid="stVerticalBlockBorderWrapper"] {
         border:1px solid #1a1f2e !important; border-radius:10px !important;
@@ -275,8 +275,8 @@ def inject_css():
         transition:all 0.2s;
     }
     [data-testid="stVerticalBlockBorderWrapper"]:hover {
-        border-color:#4c1d95 !important;
-        box-shadow:0 6px 24px rgba(124,58,237,0.08) !important;
+        border-color:#7c3aed !important;
+        box-shadow:0 6px 24px rgba(167,139,250,0.08) !important;
     }
     [data-testid="stDataFrame"] {
         border:1px solid #1a1f2e; border-radius:10px; overflow:hidden;
@@ -286,16 +286,16 @@ def inject_css():
         background:#0e1117 !important; margin-bottom:6px;
     }
     [data-testid="stExpander"] summary {
-        font-weight:600; color:#a8bdd4; font-size:0.87rem; padding:10px 14px;
+        font-weight:600; color:#ffffff; font-size:0.87rem; padding:10px 14px;
     }
-    [data-testid="stExpander"] summary:hover { color:#7c3aed; }
+    [data-testid="stExpander"] summary:hover { color:#a78bfa; }
     .stTextInput input, .stTextArea textarea {
         border-radius:7px !important; border:1px solid #1a1f2e !important;
         background:#080a10 !important; color:#e8edf5 !important; font-size:0.87rem !important;
     }
     .stTextInput input:focus, .stTextArea textarea:focus {
-        border-color:#7c3aed !important;
-        box-shadow:0 0 0 3px rgba(124,58,237,0.18) !important;
+        border-color:#a78bfa !important;
+        box-shadow:0 0 0 3px rgba(167,139,250,0.18) !important;
     }
     .stSelectbox > div > div {
         border-radius:7px !important; border:1px solid #1a1f2e !important;
@@ -315,7 +315,7 @@ def inject_css():
 
 def kpi_card(label, value, sub=None, color="#e8edf5", accent=False):
     sub_html = f"<div style='color:#4a6580;font-size:0.75rem;margin-top:2px;'>{sub}</div>" if sub else ""
-    border_left = "border-left:3px solid #7c3aed;" if accent else ""
+    border_left = "border-left:3px solid #a78bfa;" if accent else ""
     st.markdown(f"""
     <div style="background:#0e1117;border:1px solid #1a1f2e;border-radius:10px;
                 padding:16px 20px;box-shadow:0 4px 16px rgba(0,0,0,0.5);{border_left}">
@@ -331,7 +331,7 @@ def progress_bar(label, current, target):
     pct = min(current / target, 1.0) if target > 0 else 0
     pct_int = int(pct * 100)
     if pct >= 1:
-        bar_color, text_color = "linear-gradient(90deg,#5b21b6,#7c3aed)", "#7c3aed"
+        bar_color, text_color = "linear-gradient(90deg,#7c3aed,#a78bfa)", "#a78bfa"
     elif pct >= 0.5:
         bar_color, text_color = "linear-gradient(90deg,#f59e0b,#d97706)", "#f59e0b"
     else:
@@ -339,7 +339,7 @@ def progress_bar(label, current, target):
     st.markdown(f"""
     <div style="margin-bottom:14px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
-        <span style="font-weight:700;color:#c8d8eb;font-size:0.93rem;">{label}</span>
+        <span style="font-weight:700;color:#ffffff;font-size:0.93rem;">{label}</span>
         <span style="font-weight:700;color:{text_color};font-size:0.93rem;">
           {fmt_money(current)} / {fmt_money(target)} &nbsp;·&nbsp; {pct_int}%
         </span>
@@ -357,7 +357,7 @@ def _plotly_base_layout(height=280):
     return dict(
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(family="Inter, sans-serif", color="#a8bdd4", size=11),
+        font=dict(family="Inter, sans-serif", color="#ffffff", size=11),
         margin=dict(l=0, r=24, t=32, b=0),
         height=height,
         showlegend=False,
@@ -382,7 +382,7 @@ def chart_revenue_by_rep(rep_names, revenues, title="Revenue by Rep"):
         xaxis=dict(showgrid=True, gridcolor="#1a1f2e", gridwidth=1,
                    tickformat="$,.0f", tickfont=dict(color="#4a6580", size=10),
                    zeroline=False, showline=False),
-        yaxis=dict(showgrid=False, tickfont=dict(color="#c8d8eb", size=11),
+        yaxis=dict(showgrid=False, tickfont=dict(color="#ffffff", size=11),
                    zeroline=False, showline=False),
     )
     fig.update_layout(**layout)
@@ -407,7 +407,7 @@ def chart_calls_by_rep(rep_names, call_counts, title="Calls by Rep"):
         xaxis=dict(showgrid=True, gridcolor="#1a1f2e",
                    tickfont=dict(color="#4a6580", size=10),
                    zeroline=False, showline=False),
-        yaxis=dict(showgrid=False, tickfont=dict(color="#c8d8eb", size=11)),
+        yaxis=dict(showgrid=False, tickfont=dict(color="#ffffff", size=11)),
     )
     fig.update_layout(**layout)
     return fig
@@ -460,7 +460,7 @@ def chart_team_comparison(vibe_rev, rps_rev, vibe_name="Vibe", rps_name="RPS"):
     layout.update(
         title=dict(text="Revenue by Team", font=dict(size=12, color="#7a93b8"), x=0),
         barmode="group", bargap=0.35,
-        xaxis=dict(showgrid=False, tickfont=dict(color="#c8d8eb")),
+        xaxis=dict(showgrid=False, tickfont=dict(color="#ffffff")),
         yaxis=dict(showgrid=True, gridcolor="#1a1f2e",
                    tickformat="$,.0f", tickfont=dict(color="#4a6580", size=10),
                    zeroline=False),
@@ -544,7 +544,7 @@ def page_master(BUSINESSES):
                 <div style='font-size:1.0rem;font-weight:700;color:#e8edf5;margin-bottom:6px;'>
                     {biz['emoji']} {biz['name']}
                 </div>
-                <div style='font-size:1.5rem;font-weight:800;color:#7c3aed;'>{fmt_money(rev)}</div>
+                <div style='font-size:1.5rem;font-weight:800;color:#a78bfa;'>{fmt_money(rev)}</div>
                 <div style='color:{pct_color};font-size:0.75rem;font-weight:600;margin-top:2px;'>
                     {fmt_pct(pct)} of target
                 </div>
@@ -863,7 +863,7 @@ def main():
     with st.sidebar:
         st.markdown("""
         <div style='padding:4px 0 12px 0;'>
-            <div style='font-size:1.3rem;font-weight:800;color:#7c3aed;'>🔺 Trinity Ops</div>
+            <div style='font-size:1.3rem;font-weight:800;color:#a78bfa;'>🔺 Trinity Ops</div>
             <div style='font-size:0.7rem;color:#4a6580;text-transform:uppercase;
                         letter-spacing:0.1em;margin-top:2px;'>Team Dashboard</div>
         </div>
