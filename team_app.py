@@ -335,7 +335,7 @@ def progress_bar(label, current, target):
     elif pct >= 0.5:
         bar_color, text_color = "linear-gradient(90deg,#f59e0b,#d97706)", "#f59e0b"
     else:
-        bar_color, text_color = "linear-gradient(90deg,#ef4444,#dc2626)", "#ef4444"
+        bar_color, text_color = "linear-gradient(90deg,#60a5fa,#3b82f6)", "#60a5fa"
     st.markdown(f"""
     <div style="margin-bottom:14px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
@@ -414,11 +414,11 @@ def chart_calls_by_rep(rep_names, call_counts, title="Calls by Rep"):
 
 def chart_show_rate_gauge(show_rate_pct, title="Show Rate"):
     if show_rate_pct >= 70:
-        bar_color = "#22c55e"
+        bar_color = "#a78bfa"
     elif show_rate_pct >= 50:
         bar_color = "#f59e0b"
     else:
-        bar_color = "#ef4444"
+        bar_color = "#60a5fa"
 
     fig = go.Figure(go.Indicator(
         mode="gauge+number",
@@ -432,9 +432,9 @@ def chart_show_rate_gauge(show_rate_pct, title="Show Rate"):
             bgcolor="rgba(0,0,0,0)",
             borderwidth=0,
             steps=[
-                dict(range=[0,  50], color="rgba(239,68,68,0.12)"),
+                dict(range=[0,  50], color="rgba(96,165,250,0.12)"),
                 dict(range=[50, 70], color="rgba(245,158,11,0.12)"),
-                dict(range=[70,100], color="rgba(34,197,94,0.12)"),
+                dict(range=[70,100], color="rgba(167,139,250,0.12)"),
             ],
             threshold=dict(line=dict(color="#e8edf5", width=2),
                            thickness=0.75, value=show_rate_pct),
@@ -505,7 +505,7 @@ def page_master(BUSINESSES):
     # Row 1: 4 KPI cards
     k1, k2, k3, k4 = st.columns(4)
     pct_to_target = (total_revenue / total_target * 100) if total_target > 0 else 0
-    rev_color = "#22c55e" if pct_to_target >= 100 else ("#f59e0b" if pct_to_target >= 50 else "#ef4444")
+    rev_color = "#a78bfa" if pct_to_target >= 100 else ("#f59e0b" if pct_to_target >= 50 else "#60a5fa")
     with k1:
         kpi_card("Combined Revenue", fmt_money(total_revenue),
                  sub=f"{fmt_pct(pct_to_target)} of target", color=rev_color, accent=True)
@@ -538,7 +538,7 @@ def page_master(BUSINESSES):
             rev = revenue_in_range(all_data[biz_key]["won"], month_start, month_end)
             tgt = biz["monthly_target"]
             pct = (rev / tgt * 100) if tgt > 0 else 0
-            pct_color = "#22c55e" if pct >= 100 else ("#f59e0b" if pct >= 50 else "#ef4444")
+            pct_color = "#a78bfa" if pct >= 100 else ("#f59e0b" if pct >= 50 else "#60a5fa")
             with st.container(border=True):
                 st.markdown(f"""
                 <div style='font-size:1.0rem;font-weight:700;color:#e8edf5;margin-bottom:6px;'>
@@ -655,7 +655,7 @@ def page_team(biz_key, BUSINESSES):
     # Row 1: 6 KPI cards
     k1, k2, k3, k4, k5, k6 = st.columns(6)
     pct = (rev / target * 100) if target > 0 else 0
-    rev_color = "#22c55e" if pct >= 100 else ("#f59e0b" if pct >= 50 else "#ef4444")
+    rev_color = "#a78bfa" if pct >= 100 else ("#f59e0b" if pct >= 50 else "#60a5fa")
     with k1:
         kpi_card("Revenue", fmt_money(rev), sub=f"{fmt_pct(pct)} of target",
                  color=rev_color, accent=True)
@@ -672,7 +672,7 @@ def page_team(biz_key, BUSINESSES):
         if call_err:
             kpi_card("Show Rate", "—")
         else:
-            sr_color = "#22c55e" if show_rate >= 70 else ("#f59e0b" if show_rate >= 50 else "#ef4444")
+            sr_color = "#a78bfa" if show_rate >= 70 else ("#f59e0b" if show_rate >= 50 else "#60a5fa")
             kpi_card("Show Rate", fmt_pct(show_rate),
                      sub=f"{shows} shows · {no_shows} no-shows", color=sr_color)
     with k6:
