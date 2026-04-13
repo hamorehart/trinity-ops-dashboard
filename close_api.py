@@ -114,14 +114,39 @@ def get_calls_in_range(api_key, month_start, month_end):
 
 @st.cache_data(ttl=3600, show_spinner=False)
 def get_custom_activity_types(api_key):
-    """Get all custom activity type definitions for this account."""
+    """
+    Get all custom activity type definitions for this account.
+    Falls back to discovering type IDs from recent activity instances
+    if the official type-definition endpoint isn't accessible.
+    """
     data, err = _paginate(api_key, "custom_activity_type")
-    return data, err
+    if not err:
+        return data, None
+
+    # Fallback: sample recent custom activity instances to discover type IDs/names
+    sample, err2 = _paginate(api_key, "activity/custom", {"_limit": 100})
+    if err2:
+        return [], err  # return the original error
+    types_seen = {}
+    for a in sample:
+        tid   = a.get("custom_activity_type_id")
+        tname = a.get("custom_activity_type_name") or a.get("type_name") or ""
+        if tid and tid not in types_seen:
+            types_seen[tid] = {"id": tid, "name": tname}
+    return list(types_seen.values()), None
 
 
 @st.cache_data(ttl=1800, show_spinner=False)
 def get_custom_activities_in_range(api_key, type_id, month_start, month_end):
     """Custom activities of a specific type within a date range."""
+    # Try type_id in the URL path first (preferred Close CRM format)
+    data, err = _paginate(api_key, f"activity/custom/{type_id}", {
+        "date_created__gte": month_start + "T00:00:00.000000",
+        "date_created__lt":  month_end   + "T00:00:00.000000",
+    })
+    if not err:
+        return data, None
+    # Fallback: type_id as query parameter
     data, err = _paginate(api_key, "activity/custom", {
         "custom_activity_type_id": type_id,
         "date_created__gte": month_start + "T00:00:00.000000",
