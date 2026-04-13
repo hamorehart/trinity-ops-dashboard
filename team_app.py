@@ -239,27 +239,26 @@ def get_rps_call_metrics(api_key, month_start, month_end):
     completed_id    = type_map.get("05. strategy call completed")
     not_complete_id = type_map.get("04. strategy call not completed")
 
+    # Fetch counts for every discovered type so we can identify them by count
+    type_counts = {}
+    for t in types:
+        tid = t.get("id")
+        if tid:
+            d, _ = close_api.get_custom_activities_in_range(api_key, tid, month_start, month_end)
+            type_counts[tid] = len(d)
+
     debug_info = {
-        "types_found": [t.get("name", "") for t in types],
         "types_raw": types,
-        "booked_id": booked_id,
-        "completed_id": completed_id,
-        "not_complete_id": not_complete_id,
+        "type_counts": type_counts,
     }
 
     booked = no_show = show = 0
     if booked_id:
-        data, _ = close_api.get_custom_activities_in_range(
-            api_key, booked_id, month_start, month_end)
-        booked = len(data)
+        booked = type_counts.get(booked_id, 0)
     if completed_id:
-        data, _ = close_api.get_custom_activities_in_range(
-            api_key, completed_id, month_start, month_end)
-        show = len(data)
+        show = type_counts.get(completed_id, 0)
     if not_complete_id:
-        data, _ = close_api.get_custom_activities_in_range(
-            api_key, not_complete_id, month_start, month_end)
-        no_show = len(data)
+        no_show = type_counts.get(not_complete_id, 0)
 
     total_outcome = show + no_show
     show_rate = (show / total_outcome * 100) if total_outcome > 0 else 0
@@ -576,9 +575,14 @@ def page_business(biz_key, BUSINESSES):
                     st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
 
             if biz_key == "rps" and rps_debug:
-                with st.expander("Debug: RPS activity types found"):
-                    st.write("**Raw type objects:**")
-                    st.json(rps_debug.get("types_raw") or [])
+                with st.expander("Debug: RPS activity type counts this month"):
+                    counts = rps_debug.get("type_counts") or {}
+                    rows = [{"Type ID": tid, "Count this month": cnt}
+                            for tid, cnt in sorted(counts.items(), key=lambda x: -x[1])]
+                    if rows:
+                        st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+                    else:
+                        st.write("No types found.")
 
         st.divider()
 
