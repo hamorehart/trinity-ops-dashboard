@@ -146,14 +146,16 @@ def get_leads_with_status(api_key, status_label):
 def get_meetings_in_range(api_key, month_start, month_end):
     """
     Fetch implementation call meetings where the call date (starts_at) falls
-    within the selected month. Fetches a 90-day prior window to capture calls
-    booked in advance. Excludes reschedule notifications. Deduplicates by lead
-    so rebooks count once.
+    within the selected month. Only counts first-ever implementation calls —
+    leads who had a prior implementation call in the previous 12 months are
+    excluded as follow-ups. Deduplicates by lead so rebooks count once.
     """
     import datetime
     dt_start = datetime.date.fromisoformat(month_start)
     window_start = (dt_start - datetime.timedelta(days=90)).isoformat()
+    history_start = (dt_start - datetime.timedelta(days=365)).isoformat()
 
+    # Fetch meetings from 90-day window (captures advance bookings)
     data, err = _paginate(api_key, "activity/meeting", {
         "date_created__gte": window_start + "T00:00:00.000000",
         "date_created__lt":  month_end   + "T00:00:00.000000",
@@ -170,13 +172,12 @@ def get_meetings_in_range(api_key, month_start, month_end):
             continue
         if title.startswith("updated -"):
             continue
-        # Only count calls whose scheduled date falls within the selected month
         starts_at = (m.get("starts_at") or "")[:10]
         if not (month_start <= starts_at < month_end):
             continue
         filtered.append(m)
 
-    # Deduplicate by lead — if the same lead rebooks, count them once
+    # Deduplicate by lead within the month — keep earliest booking
     seen_leads = set()
     deduped = []
     for m in sorted(filtered, key=lambda x: x.get("date_created", "")):
@@ -187,7 +188,30 @@ def get_meetings_in_range(api_key, month_start, month_end):
             seen_leads.add(lid)
         deduped.append(m)
 
-    return deduped, None
+    if not deduped:
+        return deduped, None
+
+    # Fetch prior 12 months of implementation calls to identify follow-ups
+    history_data, _ = _paginate(api_key, "activity/meeting", {
+        "date_created__gte": history_start + "T00:00:00.000000",
+        "date_created__lt":  window_start  + "T00:00:00.000000",
+    })
+    prior_lead_ids = set()
+    for m in history_data:
+        title = (m.get("title") or "").strip().lower()
+        if "implementation call" not in title:
+            continue
+        if title.startswith("canceled:"):
+            continue
+        if title.startswith("updated -"):
+            continue
+        lid = m.get("lead_id")
+        if lid:
+            prior_lead_ids.add(lid)
+
+    # Keep only leads whose first implementation call is this month
+    first_calls = [m for m in deduped if m.get("lead_id") not in prior_lead_ids]
+    return first_calls, None
 
 
 @st.cache_data(ttl=1800, show_spinner=False)
