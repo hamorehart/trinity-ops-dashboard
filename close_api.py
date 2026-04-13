@@ -145,9 +145,9 @@ def get_leads_with_status(api_key, status_label):
 @st.cache_data(ttl=1800, show_spinner=False)
 def get_meetings_in_range(api_key, month_start, month_end):
     """
-    Fetch implementation call meetings created (booked/imported via API) within
-    the date range. Filters by date_created so each booking is counted in the
-    month it was booked, not the month it's scheduled.
+    Fetch implementation call meetings created (booked via API) within the date
+    range. Excludes cancellations, reschedule notifications, and past-month
+    calls. Deduplicates by lead so rebooks count once.
     """
     data, err = _paginate(api_key, "activity/meeting", {
         "date_created__gte": month_start + "T00:00:00.000000",
@@ -155,11 +155,34 @@ def get_meetings_in_range(api_key, month_start, month_end):
     })
     if err:
         return [], err
-    filtered = [
-        m for m in data
-        if "implementation call" in (m.get("title") or "").lower()
-    ]
-    return filtered, None
+
+    filtered = []
+    for m in data:
+        title = (m.get("title") or "").strip().lower()
+        if "implementation call" not in title:
+            continue
+        if title.startswith("canceled:"):
+            continue
+        if title.startswith("updated -"):
+            continue
+        # Only count calls scheduled in the selected month (not reimported old calls)
+        starts_at_month = (m.get("starts_at") or "")[:7]
+        if starts_at_month < month_start[:7]:
+            continue
+        filtered.append(m)
+
+    # Deduplicate by lead — if the same lead rebooks, count them once
+    seen_leads = set()
+    deduped = []
+    for m in sorted(filtered, key=lambda x: x.get("date_created", "")):
+        lid = m.get("lead_id")
+        if lid and lid in seen_leads:
+            continue
+        if lid:
+            seen_leads.add(lid)
+        deduped.append(m)
+
+    return deduped, None
 
 
 @st.cache_data(ttl=1800, show_spinner=False)
