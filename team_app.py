@@ -31,7 +31,7 @@ def login_page():
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
     html, body, [data-testid="stAppViewContainer"], [data-testid="stMain"] {
-        background: #0a1628 !important;
+        background: #080a10 !important;
         font-family: 'Inter', sans-serif;
     }
     [data-testid="stSidebar"] { display: none; }
@@ -42,7 +42,7 @@ def login_page():
         st.markdown("<div style='height:80px'></div>", unsafe_allow_html=True)
         st.markdown("""
         <div style='text-align:center;margin-bottom:32px;'>
-            <div style='font-size:2.6rem;font-weight:800;color:#14b8a6;letter-spacing:-0.02em;'>
+            <div style='font-size:2.6rem;font-weight:800;color:#7c3aed;letter-spacing:-0.02em;'>
                 Trinity Ops
             </div>
             <div style='color:#4a6580;font-size:0.9rem;margin-top:4px;
@@ -204,44 +204,44 @@ def inject_css():
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
     html, body, [data-testid="stAppViewContainer"], [data-testid="stMain"], .main {
-        background-color: #0a1628 !important;
+        background-color: #080a10 !important;
         font-family: 'Inter', sans-serif;
         color: #e8edf5 !important;
     }
     [data-testid="stSidebar"] {
-        background: #071020 !important;
-        border-right: 1px solid #152035 !important;
+        background: #060709 !important;
+        border-right: 1px solid #131620 !important;
     }
     [data-testid="stSidebar"] p,
     [data-testid="stSidebar"] span,
     [data-testid="stSidebar"] label,
     [data-testid="stSidebar"] div { color: #7a93b8 !important; font-size:0.85rem; }
     [data-testid="stSidebar"] [data-testid="stMetricValue"] {
-        color:#14b8a6 !important; font-weight:800 !important; font-size:1.4rem !important;
+        color:#7c3aed !important; font-weight:800 !important; font-size:1.4rem !important;
     }
     [data-testid="stSidebar"] [data-testid="stMetricLabel"] {
         color:#4a6580 !important; font-size:0.7rem !important;
         text-transform:uppercase; letter-spacing:0.08em;
     }
-    [data-testid="stSidebar"] hr { border-color:#152035 !important; margin:10px 0 !important; }
+    [data-testid="stSidebar"] hr { border-color:#131620 !important; margin:10px 0 !important; }
     [data-testid="stSidebar"] h1,
     [data-testid="stSidebar"] h2,
     [data-testid="stSidebar"] h3 {
         color:#e8edf5 !important; font-size:1rem !important; font-weight:700 !important;
     }
-    h1 { color:#14b8a6 !important; font-weight:800 !important; font-size:1.6rem !important;
+    h1 { color:#7c3aed !important; font-weight:800 !important; font-size:1.6rem !important;
          letter-spacing:-0.02em; margin-bottom:2px !important; }
     h2 { color:#c8d8eb !important; font-weight:700 !important; font-size:1.1rem !important; }
     h3 { color:#a8bdd4 !important; font-weight:600 !important; font-size:0.98rem !important; }
     p, li { color:#a8bdd4; font-size:0.88rem; }
     [data-testid="metric-container"] {
-        background:#112240 !important; border:1px solid #1a3050 !important;
+        background:#0e1117 !important; border:1px solid #1a1f2e !important;
         border-radius:10px; padding:16px 20px !important;
-        box-shadow:0 4px 16px rgba(0,0,0,0.35); transition:all 0.2s;
+        box-shadow:0 4px 16px rgba(0,0,0,0.5); transition:all 0.2s;
     }
     [data-testid="metric-container"]:hover {
-        border-color:#14b8a6 !important;
-        box-shadow:0 4px 24px rgba(20,184,166,0.15); transform:translateY(-1px);
+        border-color:#7c3aed !important;
+        box-shadow:0 4px 24px rgba(124,58,237,0.15); transform:translateY(-1px);
     }
     [data-testid="stMetricLabel"] {
         color:#4a6580 !important; font-size:0.7rem !important; font-weight:700 !important;
@@ -254,59 +254,59 @@ def inject_css():
     .stButton > button { border-radius:7px; font-weight:600; font-size:0.83rem;
         transition:all 0.18s; letter-spacing:0.02em; }
     .stButton > button[kind="primary"] {
-        background:linear-gradient(135deg,#0d9488 0%,#14b8a6 100%) !important;
+        background:linear-gradient(135deg,#5b21b6 0%,#7c3aed 100%) !important;
         border:none !important; color:white !important;
-        box-shadow:0 2px 12px rgba(20,184,166,0.35); font-weight:700 !important;
+        box-shadow:0 2px 12px rgba(124,58,237,0.35); font-weight:700 !important;
     }
     .stButton > button[kind="primary"]:hover {
-        transform:translateY(-1px); box-shadow:0 6px 22px rgba(20,184,166,0.5);
+        transform:translateY(-1px); box-shadow:0 6px 22px rgba(124,58,237,0.5);
     }
     .stButton > button[kind="secondary"] {
-        border:1px solid #1a3050 !important; color:#7a93b8 !important;
-        background:#112240 !important;
+        border:1px solid #1a1f2e !important; color:#7a93b8 !important;
+        background:#0e1117 !important;
     }
     .stButton > button[kind="secondary"]:hover {
-        background:#152a4a !important; border-color:#14b8a6 !important;
-        color:#14b8a6 !important;
+        background:#141824 !important; border-color:#7c3aed !important;
+        color:#7c3aed !important;
     }
     [data-testid="stVerticalBlockBorderWrapper"] {
-        border:1px solid #1a3050 !important; border-radius:10px !important;
-        background:#112240 !important; box-shadow:0 4px 16px rgba(0,0,0,0.3) !important;
+        border:1px solid #1a1f2e !important; border-radius:10px !important;
+        background:#0e1117 !important; box-shadow:0 4px 16px rgba(0,0,0,0.5) !important;
         transition:all 0.2s;
     }
     [data-testid="stVerticalBlockBorderWrapper"]:hover {
-        border-color:#134e4a !important;
-        box-shadow:0 6px 24px rgba(20,184,166,0.08) !important;
+        border-color:#4c1d95 !important;
+        box-shadow:0 6px 24px rgba(124,58,237,0.08) !important;
     }
     [data-testid="stDataFrame"] {
-        border:1px solid #1a3050; border-radius:10px; overflow:hidden;
+        border:1px solid #1a1f2e; border-radius:10px; overflow:hidden;
     }
     [data-testid="stExpander"] {
-        border:1px solid #1a3050 !important; border-radius:10px !important;
-        background:#112240 !important; margin-bottom:6px;
+        border:1px solid #1a1f2e !important; border-radius:10px !important;
+        background:#0e1117 !important; margin-bottom:6px;
     }
     [data-testid="stExpander"] summary {
         font-weight:600; color:#a8bdd4; font-size:0.87rem; padding:10px 14px;
     }
-    [data-testid="stExpander"] summary:hover { color:#14b8a6; }
+    [data-testid="stExpander"] summary:hover { color:#7c3aed; }
     .stTextInput input, .stTextArea textarea {
-        border-radius:7px !important; border:1px solid #1a3050 !important;
-        background:#0a1628 !important; color:#e8edf5 !important; font-size:0.87rem !important;
+        border-radius:7px !important; border:1px solid #1a1f2e !important;
+        background:#080a10 !important; color:#e8edf5 !important; font-size:0.87rem !important;
     }
     .stTextInput input:focus, .stTextArea textarea:focus {
-        border-color:#14b8a6 !important;
-        box-shadow:0 0 0 3px rgba(20,184,166,0.18) !important;
+        border-color:#7c3aed !important;
+        box-shadow:0 0 0 3px rgba(124,58,237,0.18) !important;
     }
     .stSelectbox > div > div {
-        border-radius:7px !important; border:1px solid #1a3050 !important;
-        background:#0a1628 !important; color:#e8edf5 !important;
+        border-radius:7px !important; border:1px solid #1a1f2e !important;
+        background:#080a10 !important; color:#e8edf5 !important;
     }
     [data-baseweb="menu"] {
-        background:#112240 !important; border:1px solid #1a3050 !important;
+        background:#0e1117 !important; border:1px solid #1a1f2e !important;
         border-radius:8px !important;
     }
-    [data-testid="stAlert"] { border-radius:8px !important; background:#0d1e35 !important; }
-    hr { border-color:#152035 !important; }
+    [data-testid="stAlert"] { border-radius:8px !important; background:#0a0c12 !important; }
+    hr { border-color:#131620 !important; }
     [data-testid="stCaptionContainer"] p { color:#4a6580 !important; font-size:0.78rem !important; }
     </style>
     """, unsafe_allow_html=True)
@@ -315,10 +315,10 @@ def inject_css():
 
 def kpi_card(label, value, sub=None, color="#e8edf5", accent=False):
     sub_html = f"<div style='color:#4a6580;font-size:0.75rem;margin-top:2px;'>{sub}</div>" if sub else ""
-    border_left = "border-left:3px solid #14b8a6;" if accent else ""
+    border_left = "border-left:3px solid #7c3aed;" if accent else ""
     st.markdown(f"""
-    <div style="background:#112240;border:1px solid #1a3050;border-radius:10px;
-                padding:16px 20px;box-shadow:0 4px 16px rgba(0,0,0,0.35);{border_left}">
+    <div style="background:#0e1117;border:1px solid #1a1f2e;border-radius:10px;
+                padding:16px 20px;box-shadow:0 4px 16px rgba(0,0,0,0.5);{border_left}">
       <div style="color:#4a6580;font-size:0.7rem;font-weight:700;
                   text-transform:uppercase;letter-spacing:0.08em;">{label}</div>
       <div style="color:{color};font-size:1.7rem;font-weight:800;
@@ -331,11 +331,11 @@ def progress_bar(label, current, target):
     pct = min(current / target, 1.0) if target > 0 else 0
     pct_int = int(pct * 100)
     if pct >= 1:
-        bar_color, text_color = "linear-gradient(90deg,#0d9488,#14b8a6)", "#14b8a6"
+        bar_color, text_color = "linear-gradient(90deg,#5b21b6,#7c3aed)", "#7c3aed"
     elif pct >= 0.5:
         bar_color, text_color = "linear-gradient(90deg,#f59e0b,#d97706)", "#f59e0b"
     else:
-        bar_color, text_color = "linear-gradient(90deg,#60a5fa,#3b82f6)", "#60a5fa"
+        bar_color, text_color = "linear-gradient(90deg,#ef4444,#dc2626)", "#ef4444"
     st.markdown(f"""
     <div style="margin-bottom:14px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
@@ -344,7 +344,7 @@ def progress_bar(label, current, target):
           {fmt_money(current)} / {fmt_money(target)} &nbsp;·&nbsp; {pct_int}%
         </span>
       </div>
-      <div style="background:#1a3050;border-radius:8px;height:10px;overflow:hidden;">
+      <div style="background:#1a1f2e;border-radius:8px;height:10px;overflow:hidden;">
         <div style="width:{pct_int}%;background:{bar_color};height:100%;
                     border-radius:8px;transition:width 0.4s;"></div>
       </div>
@@ -379,7 +379,7 @@ def chart_revenue_by_rep(rep_names, revenues, title="Revenue by Rep"):
     layout = _plotly_base_layout(height=max(160, len(names) * 55))
     layout.update(
         title=dict(text=title, font=dict(size=12, color="#7a93b8"), x=0, pad=dict(l=0)),
-        xaxis=dict(showgrid=True, gridcolor="#1a3050", gridwidth=1,
+        xaxis=dict(showgrid=True, gridcolor="#1a1f2e", gridwidth=1,
                    tickformat="$,.0f", tickfont=dict(color="#4a6580", size=10),
                    zeroline=False, showline=False),
         yaxis=dict(showgrid=False, tickfont=dict(color="#c8d8eb", size=11),
@@ -404,7 +404,7 @@ def chart_calls_by_rep(rep_names, call_counts, title="Calls by Rep"):
     layout = _plotly_base_layout(height=max(160, len(names) * 55))
     layout.update(
         title=dict(text=title, font=dict(size=12, color="#7a93b8"), x=0),
-        xaxis=dict(showgrid=True, gridcolor="#1a3050",
+        xaxis=dict(showgrid=True, gridcolor="#1a1f2e",
                    tickfont=dict(color="#4a6580", size=10),
                    zeroline=False, showline=False),
         yaxis=dict(showgrid=False, tickfont=dict(color="#c8d8eb", size=11)),
@@ -414,11 +414,11 @@ def chart_calls_by_rep(rep_names, call_counts, title="Calls by Rep"):
 
 def chart_show_rate_gauge(show_rate_pct, title="Show Rate"):
     if show_rate_pct >= 70:
-        bar_color = "#a78bfa"
+        bar_color = "#5b9bd5"
     elif show_rate_pct >= 50:
         bar_color = "#f59e0b"
     else:
-        bar_color = "#60a5fa"
+        bar_color = "#ef4444"
 
     fig = go.Figure(go.Indicator(
         mode="gauge+number",
@@ -426,15 +426,15 @@ def chart_show_rate_gauge(show_rate_pct, title="Show Rate"):
         number=dict(suffix="%", font=dict(size=36, color="#e8edf5", family="Inter")),
         title=dict(text=title, font=dict(size=12, color="#7a93b8", family="Inter")),
         gauge=dict(
-            axis=dict(range=[0, 100], tickwidth=1, tickcolor="#1a3050",
+            axis=dict(range=[0, 100], tickwidth=1, tickcolor="#1a1f2e",
                       tickfont=dict(color="#4a6580", size=9), dtick=25),
             bar=dict(color=bar_color, thickness=0.25),
             bgcolor="rgba(0,0,0,0)",
             borderwidth=0,
             steps=[
-                dict(range=[0,  50], color="rgba(96,165,250,0.12)"),
+                dict(range=[0,  50], color="rgba(239,68,68,0.12)"),
                 dict(range=[50, 70], color="rgba(245,158,11,0.12)"),
-                dict(range=[70,100], color="rgba(167,139,250,0.12)"),
+                dict(range=[70,100], color="rgba(91,155,213,0.12)"),
             ],
             threshold=dict(line=dict(color="#e8edf5", width=2),
                            thickness=0.75, value=show_rate_pct),
@@ -461,7 +461,7 @@ def chart_team_comparison(vibe_rev, rps_rev, vibe_name="Vibe", rps_name="RPS"):
         title=dict(text="Revenue by Team", font=dict(size=12, color="#7a93b8"), x=0),
         barmode="group", bargap=0.35,
         xaxis=dict(showgrid=False, tickfont=dict(color="#c8d8eb")),
-        yaxis=dict(showgrid=True, gridcolor="#1a3050",
+        yaxis=dict(showgrid=True, gridcolor="#1a1f2e",
                    tickformat="$,.0f", tickfont=dict(color="#4a6580", size=10),
                    zeroline=False),
         showlegend=False,
@@ -505,7 +505,7 @@ def page_master(BUSINESSES):
     # Row 1: 4 KPI cards
     k1, k2, k3, k4 = st.columns(4)
     pct_to_target = (total_revenue / total_target * 100) if total_target > 0 else 0
-    rev_color = "#a78bfa" if pct_to_target >= 100 else ("#f59e0b" if pct_to_target >= 50 else "#60a5fa")
+    rev_color = "#5b9bd5" if pct_to_target >= 100 else ("#f59e0b" if pct_to_target >= 50 else "#ef4444")
     with k1:
         kpi_card("Combined Revenue", fmt_money(total_revenue),
                  sub=f"{fmt_pct(pct_to_target)} of target", color=rev_color, accent=True)
@@ -538,13 +538,13 @@ def page_master(BUSINESSES):
             rev = revenue_in_range(all_data[biz_key]["won"], month_start, month_end)
             tgt = biz["monthly_target"]
             pct = (rev / tgt * 100) if tgt > 0 else 0
-            pct_color = "#a78bfa" if pct >= 100 else ("#f59e0b" if pct >= 50 else "#60a5fa")
+            pct_color = "#5b9bd5" if pct >= 100 else ("#f59e0b" if pct >= 50 else "#ef4444")
             with st.container(border=True):
                 st.markdown(f"""
                 <div style='font-size:1.0rem;font-weight:700;color:#e8edf5;margin-bottom:6px;'>
                     {biz['emoji']} {biz['name']}
                 </div>
-                <div style='font-size:1.5rem;font-weight:800;color:#14b8a6;'>{fmt_money(rev)}</div>
+                <div style='font-size:1.5rem;font-weight:800;color:#7c3aed;'>{fmt_money(rev)}</div>
                 <div style='color:{pct_color};font-size:0.75rem;font-weight:600;margin-top:2px;'>
                     {fmt_pct(pct)} of target
                 </div>
@@ -655,7 +655,7 @@ def page_team(biz_key, BUSINESSES):
     # Row 1: 6 KPI cards
     k1, k2, k3, k4, k5, k6 = st.columns(6)
     pct = (rev / target * 100) if target > 0 else 0
-    rev_color = "#a78bfa" if pct >= 100 else ("#f59e0b" if pct >= 50 else "#60a5fa")
+    rev_color = "#5b9bd5" if pct >= 100 else ("#f59e0b" if pct >= 50 else "#ef4444")
     with k1:
         kpi_card("Revenue", fmt_money(rev), sub=f"{fmt_pct(pct)} of target",
                  color=rev_color, accent=True)
@@ -672,7 +672,7 @@ def page_team(biz_key, BUSINESSES):
         if call_err:
             kpi_card("Show Rate", "—")
         else:
-            sr_color = "#a78bfa" if show_rate >= 70 else ("#f59e0b" if show_rate >= 50 else "#60a5fa")
+            sr_color = "#5b9bd5" if show_rate >= 70 else ("#f59e0b" if show_rate >= 50 else "#ef4444")
             kpi_card("Show Rate", fmt_pct(show_rate),
                      sub=f"{shows} shows · {no_shows} no-shows", color=sr_color)
     with k6:
@@ -863,7 +863,7 @@ def main():
     with st.sidebar:
         st.markdown("""
         <div style='padding:4px 0 12px 0;'>
-            <div style='font-size:1.3rem;font-weight:800;color:#14b8a6;'>🔺 Trinity Ops</div>
+            <div style='font-size:1.3rem;font-weight:800;color:#7c3aed;'>🔺 Trinity Ops</div>
             <div style='font-size:0.7rem;color:#4a6580;text-transform:uppercase;
                         letter-spacing:0.1em;margin-top:2px;'>Team Dashboard</div>
         </div>
