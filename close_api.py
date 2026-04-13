@@ -147,9 +147,12 @@ def get_custom_activity_types(api_key):
             timeout=15,
         )
         if r.status_code == 200:
-            types_result.append(r.json())
+            obj = r.json()
         else:
-            types_result.append({"id": tid, "name": ""})
+            # Store the status and a sample raw activity for debugging
+            sample_activity = next((a for a in sample if a.get("custom_activity_type_id") == tid), {})
+            obj = {"id": tid, "name": "", "_lookup_status": r.status_code, "_sample": sample_activity}
+        types_result.append(obj)
 
     return types_result, None
 
