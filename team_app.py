@@ -227,15 +227,24 @@ def get_rps_call_metrics(api_key, month_start, month_end):
     Shows        = custom activity '05. Strategy Call Completed'
     No-shows     = custom activity '04. Strategy Call Not Completed'
     Show rate    = shows / (shows + no_shows)
+    Returns (booked, show, no_show, show_rate, err, debug_info)
     """
     types, err = close_api.get_custom_activity_types(api_key)
     if err:
-        return 0, 0, 0, 0, err
+        return 0, 0, 0, 0, err, {}
 
-    type_map = {t.get("name", "").strip(): t.get("id") for t in types}
-    booked_id       = type_map.get("03. Strategy Call Booked")
-    completed_id    = type_map.get("05. Strategy Call Completed")
-    not_complete_id = type_map.get("04. Strategy Call Not Completed")
+    # Case-insensitive type map
+    type_map = {t.get("name", "").strip().lower(): t.get("id") for t in types}
+    booked_id       = type_map.get("03. strategy call booked")
+    completed_id    = type_map.get("05. strategy call completed")
+    not_complete_id = type_map.get("04. strategy call not completed")
+
+    debug_info = {
+        "types_found": [t.get("name", "") for t in types],
+        "booked_id": booked_id,
+        "completed_id": completed_id,
+        "not_complete_id": not_complete_id,
+    }
 
     booked = no_show = show = 0
     if booked_id:
@@ -253,7 +262,7 @@ def get_rps_call_metrics(api_key, month_start, month_end):
 
     total_outcome = show + no_show
     show_rate = (show / total_outcome * 100) if total_outcome > 0 else 0
-    return booked, show, no_show, show_rate, None
+    return booked, show, no_show, show_rate, None, debug_info
 
 # ── CSS ────────────────────────────────────────────────────────────────────────
 
@@ -529,8 +538,9 @@ def page_business(biz_key, BUSINESSES):
             if biz_key == "vibe":
                 booked, shows, no_shows, show_rate, call_err, booked_meetings = \
                     get_vibe_call_metrics(api, month_start, month_end)
+                rps_debug = {}
             else:
-                booked, shows, no_shows, show_rate, call_err = \
+                booked, shows, no_shows, show_rate, call_err, rps_debug = \
                     get_rps_call_metrics(api, month_start, month_end)
                 booked_meetings = []
 
@@ -563,6 +573,13 @@ def page_business(biz_key, BUSINESSES):
                         for m in sorted(booked_meetings, key=lambda x: x.get("starts_at", ""))
                     ]
                     st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+
+            if biz_key == "rps" and rps_debug:
+                with st.expander("Debug: RPS activity types found"):
+                    st.write("**Types found in Close CRM:**", rps_debug.get("types_found") or "none")
+                    st.write("Booked ID matched:", rps_debug.get("booked_id") or "not matched")
+                    st.write("Completed ID matched:", rps_debug.get("completed_id") or "not matched")
+                    st.write("Not Completed ID matched:", rps_debug.get("not_complete_id") or "not matched")
 
         st.divider()
 
