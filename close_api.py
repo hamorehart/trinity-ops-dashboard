@@ -123,17 +123,35 @@ def get_custom_activity_types(api_key):
     if not err:
         return data, None
 
-    # Fallback: sample recent custom activity instances to discover type IDs/names
+    # Fallback: sample recent custom activity instances to discover type IDs,
+    # then look up each type definition individually to get its name.
     sample, err2 = _paginate(api_key, "activity/custom", {"_limit": 100})
     if err2:
         return [], err  # return the original error
-    types_seen = {}
+
+    # Collect unique type IDs from instances
+    type_ids = []
+    seen = set()
     for a in sample:
-        tid   = a.get("custom_activity_type_id")
-        tname = a.get("custom_activity_type_name") or a.get("type_name") or ""
-        if tid and tid not in types_seen:
-            types_seen[tid] = {"id": tid, "name": tname}
-    return list(types_seen.values()), None
+        tid = a.get("custom_activity_type_id")
+        if tid and tid not in seen:
+            seen.add(tid)
+            type_ids.append(tid)
+
+    # Try individual type-definition lookups to get names
+    types_result = []
+    for tid in type_ids:
+        r = requests.get(
+            f"{BASE}/custom_activity_type/{tid}/",
+            auth=_auth(api_key),
+            timeout=15,
+        )
+        if r.status_code == 200:
+            types_result.append(r.json())
+        else:
+            types_result.append({"id": tid, "name": ""})
+
+    return types_result, None
 
 
 @st.cache_data(ttl=1800, show_spinner=False)
